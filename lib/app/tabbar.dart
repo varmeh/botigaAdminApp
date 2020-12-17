@@ -32,8 +32,7 @@ class _TabbarState extends State<Tabbar> with WidgetsBindingObserver {
 
   void setStatusBarBrightness() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarBrightness:
-          _selectedIndex == 0 ? Brightness.dark : Brightness.light,
+      statusBarBrightness: Brightness.light,
     ));
   }
 
@@ -58,8 +57,9 @@ class _TabbarState extends State<Tabbar> with WidgetsBindingObserver {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: AppTheme.backgroundColor,
         selectedItemColor: AppTheme.primaryColor,
-        selectedLabelStyle: AppTheme.textStyle.w500.size(12),
-        unselectedLabelStyle: AppTheme.textStyle.w500.size(13),
+        iconSize: 28,
+        selectedLabelStyle: AppTheme.textStyle.w500.size(14),
+        unselectedLabelStyle: AppTheme.textStyle.w500.size(14),
         unselectedItemColor: AppTheme.navigationItemColor,
         type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
