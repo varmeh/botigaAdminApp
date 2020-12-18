@@ -7,6 +7,8 @@ import '../../util/index.dart' show AppTheme, Http;
 import '../../widgets/index.dart' show LoaderOverlay;
 import '../../models/index.dart' show SellerModel;
 
+import 'paymentStatusScreen.dart';
+
 class PaytmPaymentWebView extends StatefulWidget {
   static const route = 'payment';
 
@@ -60,7 +62,6 @@ class _PaytmPaymentWebViewState extends State<PaytmPaymentWebView> {
                 debuggingEnabled: false,
                 javascriptMode: JavascriptMode.unrestricted,
                 onPageStarted: (url) {
-                  print(url);
                   if (url.contains('/transaction/status')) {
                     _showPaymentStatus();
                   }
@@ -119,19 +120,23 @@ class _PaytmPaymentWebViewState extends State<PaytmPaymentWebView> {
       _isLoading = true;
     });
     try {
-      final status = await Http.get(
+      final json = await Http.get(
           '/api/admin/transaction/status?paymentId=${widget.paymentId}');
-      print(status);
-      // Future.delayed(Duration(milliseconds: 25), () {
-      //   Navigator.pushAndRemoveUntil(
-      //     context,
-      //     PageRouteBuilder(
-      //       pageBuilder: (_, __, ___) => OrderStatusScreen(order),
-      //       transitionDuration: Duration.zero,
-      //     ),
-      //     (route) => false,
-      //   );
-      // });
+      Future.delayed(Duration(milliseconds: 25), () {
+        Navigator.pushAndRemoveUntil(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => PaymentStatusScreen(
+              seller: widget.seller,
+              status: json['resultInfo']['resultStatus'],
+              txnAmount: json['txnAmount'],
+              txnId: json['txnId'],
+            ),
+            transitionDuration: Duration.zero,
+          ),
+          (route) => false,
+        );
+      });
     } catch (_) {} finally {
       // Clear order list to enable reloading of orders
       setState(() => _isLoading = true);
