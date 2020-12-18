@@ -9,6 +9,7 @@ import '../widgets/index.dart'
         PassiveButton,
         BotigaAppBar,
         LoaderOverlay,
+        BotigaSwitch,
         Toast;
 
 import '../models/index.dart' show SellerModel;
@@ -199,12 +200,83 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   labelText: 'Paytm MID',
                   onSave: null,
                   initialValue: seller.mid,
-                  readOnly: true,
                 ),
                 sizedBox,
+                _switchDetails(
+                  title: 'Authorize Bank Details Update',
+                  subTitle: 'Permission Necessary for Bank Update',
+                  initialValue: seller.editable,
+                  onChange: (bool val) => setState(() => seller.editable = val),
+                  confirmationMessage:
+                      'Are you sure you want to make account editable',
+                ),
+                // sizedBox,
+                _switchDetails(
+                  title: 'Seller Account Verified',
+                  subTitle: 'Seller can\'t go live unless verified',
+                  initialValue: seller.editable,
+                  onChange: (bool val) => setState(() => seller.editable = val),
+                  confirmationMessage:
+                      'Has seller emailed you the snapshot of test payment?',
+                ),
+                // sizedBox,
               ],
             ),
           );
+  }
+
+  Widget _switchDetails({
+    String title,
+    String subTitle,
+    bool initialValue,
+    Function onChange,
+    String confirmationMessage,
+  }) {
+    return ListTile(
+      contentPadding: const EdgeInsets.all(0.0),
+      title: Text(
+        title,
+        style: AppTheme.textStyle.w500.size(16).lineHeight(1.33).color100,
+      ),
+      subtitle: Text(
+        subTitle,
+        style: AppTheme.textStyle.w500.size(14).lineHeight(1.33).color50,
+      ),
+      trailing: BotigaSwitch(
+        onChange: (bool value) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(
+                  'Confirmation',
+                  style: AppTheme.textStyle.w500.color100,
+                ),
+                content: Text(
+                  confirmationMessage,
+                  style: AppTheme.textStyle.w400.color100,
+                ),
+                actions: [
+                  FlatButton(
+                    child: Text(
+                      'Yes',
+                      style:
+                          AppTheme.textStyle.w600.colored(AppTheme.errorColor),
+                    ),
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      onChange(value);
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        switchValue: initialValue,
+        alignment: Alignment.topRight,
+      ),
+    );
   }
 
   Widget _getSellerDetails(BuildContext context) {

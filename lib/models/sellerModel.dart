@@ -15,7 +15,7 @@ class SellerModel {
   final String whatsapp;
   final String email;
 
-  final bool editable;
+  bool editable;
   final bool verified;
   final String beneficiaryName;
   final String accountNumber;
