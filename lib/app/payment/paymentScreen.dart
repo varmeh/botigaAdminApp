@@ -231,7 +231,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   title: 'Authorize Bank Details Update',
                   subTitle: 'Permission Necessary for Bank Update',
                   initialValue: seller.editable,
-                  onChange: (bool val) => _toggleStatus('editable', val),
+                  onChange: (bool val) => _toggleEditable(val),
                   confirmationMessage:
                       'Are you sure you want to make account editable',
                 ),
@@ -239,7 +239,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   title: 'Seller Account Verified',
                   subTitle: 'Seller can\'t go live unless verified',
                   initialValue: seller.verified,
-                  onChange: (bool val) => _toggleStatus('verified', val),
+                  onChange: (bool val) => _toggleVerified(val),
                   confirmationMessage:
                       'Has seller emailed you the snapshot of test payment?',
                 ),
@@ -284,36 +284,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         style: AppTheme.textStyle.w500.size(14).lineHeight(1.33).color50,
       ),
       trailing: BotigaSwitch(
-        onChange: (bool value) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text(
-                  'Confirmation',
-                  style: AppTheme.textStyle.w500.color100,
-                ),
-                content: Text(
-                  confirmationMessage,
-                  style: AppTheme.textStyle.w400.color100,
-                ),
-                actions: [
-                  FlatButton(
-                    child: Text(
-                      'Yes',
-                      style: AppTheme.textStyle.w600
-                          .colored(AppTheme.primaryColor),
-                    ),
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      onChange(value);
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        },
+        onChange: onChange,
         switchValue: initialValue,
         alignment: Alignment.topRight,
       ),
@@ -517,7 +488,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
-  Future<void> _toggleStatus(String field, bool value) async {
+  Future<void> _toggleEditable(bool value) async {
     setState(() {
       seller.editable = value;
       _isLoading = true;
@@ -528,11 +499,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
         '/api/admin/seller/bankDetails',
         body: {
           'phone': seller.phone,
-          field: value,
+          'editable': value,
         },
       );
       seller = SellerModel.fromJson(json);
-      Toast(message: 'Bank Details editable updated').show(context);
+      Toast(message: 'Bank Details Editable').show(context);
     } catch (error) {
       Toast(
         message: 'Update failed. Try again',
@@ -543,9 +514,37 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (_error) {
         seller.editable = !value;
       }
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _toggleVerified(bool value) async {
+    setState(() {
+      seller.verified = value;
+      _isLoading = true;
+    });
+    bool _error = false;
+    try {
+      final json = await Http.patch(
+        '/api/admin/seller/bankDetails',
+        body: {
+          'phone': seller.phone,
+          'verified': value,
+        },
+      );
+      seller = SellerModel.fromJson(json);
+      Toast(message: 'Bank Details Verified').show(context);
+    } catch (error) {
+      Toast(
+        message: 'Update failed. Try again',
+        color: AppTheme.errorColor,
+      ).show(context);
+      _error = true;
+    } finally {
+      if (_error) {
+        seller.verified = !value;
+      }
+      setState(() => _isLoading = false);
     }
   }
 }

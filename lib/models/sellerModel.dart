@@ -16,7 +16,7 @@ class SellerModel {
   final String email;
 
   bool editable;
-  final bool verified;
+  bool verified;
   final String beneficiaryName;
   final String accountNumber;
   final String ifscCode;
