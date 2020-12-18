@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-import '../util/index.dart' show AppTheme, Http;
+import '../util/index.dart' show AppTheme, Http, TextStyleHelpers;
 import '../widgets/index.dart'
-    show BotigaTextFieldForm, ActiveButton, BotigaAppBar, LoaderOverlay, Toast;
+    show
+        BotigaTextFieldForm,
+        ActiveButton,
+        PassiveButton,
+        BotigaAppBar,
+        LoaderOverlay,
+        Toast;
 
 import '../models/index.dart' show SellerModel;
 
@@ -30,21 +36,27 @@ class _PaymentScreenState extends State<PaymentScreen> {
         backgroundColor: AppTheme.backgroundColor,
         floatingActionButton: _getSellerDetails(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        appBar: BotigaAppBar('Seller Payment Configuration'),
+        appBar: BotigaAppBar('Payment Configuration'),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 12),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _sellerDetails(),
-                  _bankDetails(),
-                  SizedBox(height: 152),
-                ],
-              ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                _sellerDetails(),
+                _sellerDoesnotHaveBankDetails()
+                    ? Container()
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 32.0),
+                        child: Divider(
+                          thickness: 8.0,
+                          color: AppTheme.dividerColor,
+                        ),
+                      ),
+                _bankDetails(),
+                SizedBox(height: 152),
+              ],
             ),
           ),
         ),
@@ -56,115 +68,142 @@ class _PaymentScreenState extends State<PaymentScreen> {
     const sizedBox = SizedBox(height: 16);
     return seller == null
         ? Container()
-        : Column(
-            children: [
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'Business Name',
-                onSave: null,
-                initialValue: seller.businessName,
-                readOnly: true,
-              ),
-              sizedBox,
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'Category',
-                onSave: null,
-                initialValue: seller.businessCategory,
-                readOnly: true,
-              ),
-              sizedBox,
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'Brand',
-                onSave: null,
-                initialValue: seller.brand,
-                readOnly: true,
-              ),
-              sizedBox,
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'Tag Line',
-                onSave: null,
-                initialValue: seller.tagline,
-                readOnly: true,
-              ),
-              sizedBox,
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'Phone',
-                onSave: null,
-                initialValue: seller.phone,
-                readOnly: true,
-              ),
-              sizedBox,
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'Whatsapp',
-                onSave: null,
-                initialValue: seller.whatsapp,
-                readOnly: true,
-              ),
-              sizedBox,
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'Email',
-                onSave: null,
-                initialValue: seller.email,
-                readOnly: true,
-              ),
-              sizedBox,
-            ],
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Seller Details',
+                  textAlign: TextAlign.start,
+                  style: AppTheme.textStyle.color100.w500.size(18.0),
+                ),
+                SizedBox(height: 24),
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Business Name',
+                  onSave: null,
+                  initialValue: seller.businessName,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Category',
+                  onSave: null,
+                  initialValue: seller.businessCategory,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Brand',
+                  onSave: null,
+                  initialValue: seller.brand,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Tag Line',
+                  onSave: null,
+                  initialValue: seller.tagline,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Phone',
+                  onSave: null,
+                  initialValue: seller.phone,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Whatsapp',
+                  onSave: null,
+                  initialValue: seller.whatsapp,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Email',
+                  onSave: null,
+                  initialValue: seller.email,
+                  readOnly: true,
+                ),
+              ],
+            ),
           );
   }
 
   Widget _bankDetails() {
     const sizedBox = SizedBox(height: 16);
-    return seller == null || seller.beneficiaryName == null
+    return _sellerDoesnotHaveBankDetails()
         ? Container()
-        : Column(
-            children: [
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'Beneficiary Name',
-                onSave: null,
-                initialValue: seller.beneficiaryName,
-                readOnly: true,
-              ),
-              sizedBox,
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'Account Number',
-                onSave: null,
-                initialValue: seller.accountNumber,
-                readOnly: true,
-              ),
-              sizedBox,
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'IFSC',
-                onSave: null,
-                initialValue: seller.ifscCode,
-                readOnly: true,
-              ),
-              sizedBox,
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'Bank',
-                onSave: null,
-                initialValue: seller.bankName,
-                readOnly: true,
-              ),
-              sizedBox,
-              BotigaTextFieldForm(
-                focusNode: null,
-                labelText: 'Account Type',
-                onSave: null,
-                initialValue: seller.accountType,
-                readOnly: true,
-              ),
-              sizedBox,
-            ],
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Bank Details',
+                  textAlign: TextAlign.start,
+                  style: AppTheme.textStyle.color100.w500.size(18.0),
+                ),
+                SizedBox(height: 24),
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Beneficiary Name',
+                  onSave: null,
+                  initialValue: seller.beneficiaryName,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Account Number',
+                  onSave: null,
+                  initialValue: seller.accountNumber,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'IFSC',
+                  onSave: null,
+                  initialValue: seller.ifscCode,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Bank',
+                  onSave: null,
+                  initialValue: seller.bankName,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Account Type',
+                  onSave: null,
+                  initialValue: seller.accountType,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Paytm MID',
+                  onSave: null,
+                  initialValue: seller.mid,
+                  readOnly: true,
+                ),
+                sizedBox,
+              ],
+            ),
           );
   }
 
@@ -206,6 +245,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
     );
   }
+
+  bool _sellerDoesnotHaveBankDetails() =>
+      seller == null || seller.beneficiaryName == null;
 
   Future<void> _onSubmitted(BuildContext context) async {
     if (_phoneFormKey.currentState.validate()) {
