@@ -6,7 +6,6 @@ import '../widgets/index.dart'
     show
         BotigaTextFieldForm,
         ActiveButton,
-        PassiveButton,
         BotigaAppBar,
         LoaderOverlay,
         BotigaSwitch,
@@ -206,20 +205,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   title: 'Authorize Bank Details Update',
                   subTitle: 'Permission Necessary for Bank Update',
                   initialValue: seller.editable,
-                  onChange: (bool val) => setState(() => seller.editable = val),
+                  onChange: (bool val) => _toggleStatus('editable', val),
                   confirmationMessage:
                       'Are you sure you want to make account editable',
                 ),
-                // sizedBox,
                 _switchDetails(
                   title: 'Seller Account Verified',
                   subTitle: 'Seller can\'t go live unless verified',
-                  initialValue: seller.editable,
-                  onChange: (bool val) => setState(() => seller.editable = val),
+                  initialValue: seller.verified,
+                  onChange: (bool val) => _toggleStatus('verified', val),
                   confirmationMessage:
                       'Has seller emailed you the snapshot of test payment?',
                 ),
-                // sizedBox,
               ],
             ),
           );
@@ -260,8 +257,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   FlatButton(
                     child: Text(
                       'Yes',
-                      style:
-                          AppTheme.textStyle.w600.colored(AppTheme.errorColor),
+                      style: AppTheme.textStyle.w600
+                          .colored(AppTheme.primaryColor),
                     ),
                     onPressed: () async {
                       Navigator.of(context).pop();
@@ -334,6 +331,38 @@ class _PaymentScreenState extends State<PaymentScreen> {
       } finally {
         setState(() => _isLoading = false);
       }
+    }
+  }
+
+  Future<void> _toggleStatus(String field, bool value) async {
+    setState(() {
+      seller.editable = value;
+      _isLoading = true;
+    });
+    bool _error = false;
+    try {
+      final json = await Http.patch(
+        '/api/admin/seller/bankDetails',
+        body: {
+          'phone': seller.phone,
+          field: value,
+        },
+      );
+      seller = SellerModel.fromJson(json);
+      Toast(message: 'Bank Details editable updated').show(context);
+    } catch (error) {
+      Toast(
+        message: 'Update failed. Try again',
+        color: AppTheme.errorColor,
+      ).show(context);
+      _error = true;
+    } finally {
+      if (_error) {
+        seller.editable = !value;
+      }
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 }
