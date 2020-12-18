@@ -13,6 +13,7 @@ class SellerModel {
   final String brandImageUrl;
   final String phone;
   final String whatsapp;
+  final String email;
 
   final bool editable;
   final bool verified;
@@ -33,6 +34,7 @@ class SellerModel {
     @required this.brandImageUrl,
     @required this.phone,
     @required this.whatsapp,
+    @required this.email,
     @required this.editable,
     @required this.verified,
     @required this.beneficiaryName,
