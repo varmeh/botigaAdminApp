@@ -14,6 +14,7 @@ import '../widgets/index.dart'
         BotigaBottomModal;
 
 import '../models/index.dart' show SellerModel;
+import 'paytmPaymentWebView.dart';
 
 class PaymentScreen extends StatefulWidget {
   @override
@@ -23,9 +24,11 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   GlobalKey<FormState> _phoneFormKey = GlobalKey<FormState>();
   GlobalKey<FormState> _paytmMidFormKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _testPaymentFormKey = GlobalKey<FormState>();
 
   bool _isLoading = false;
   String _updatedMid;
+  String _amount;
   SellerModel seller;
   TextEditingController _midTextEditingController;
 
@@ -250,7 +253,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     Expanded(
                       child: PassiveButton(
                         title: 'Test Payment',
-                        onPressed: () {},
+                        onPressed: () => _testPaymentModal().show(context),
                       ),
                     ),
                   ],
@@ -403,6 +406,81 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 } catch (error) {
                   Toast(
                     message: 'Mid update failed. Try again',
+                    color: AppTheme.errorColor,
+                  ).show(context);
+                } finally {
+                  setState(() => _isLoading = false);
+                }
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  BotigaBottomModal _testPaymentModal() {
+    const sizedBox24 = SizedBox(height: 24);
+
+    return BotigaBottomModal(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Verify Seller Bank Account',
+            style: AppTheme.textStyle.w700.color100.size(20.0).lineHeight(1.25),
+          ),
+          sizedBox24,
+          Text(
+            'Confirm Seller account before activation. Make a small test transaction',
+            style: AppTheme.textStyle.w500.color50.size(14.0).lineHeight(1.25),
+          ),
+          sizedBox24,
+          Form(
+            key: _testPaymentFormKey,
+            child: BotigaTextFieldForm(
+              focusNode: null,
+              labelText: 'Amount',
+              onSave: (String val) => _amount = val,
+              onFieldSubmitted: (String val) => _amount = val,
+              keyboardType: TextInputType.datetime,
+              validator: (val) {
+                if (val.isEmpty) {
+                  return 'Required';
+                }
+                return null;
+              },
+            ),
+          ),
+          sizedBox24,
+          ActiveButton(
+            title: 'Continue',
+            onPressed: () async {
+              if (_testPaymentFormKey.currentState.validate()) {
+                setState(() => _isLoading = true);
+                try {
+                  final json = await Http.post(
+                    '/api/admin/transaction/test',
+                    body: {
+                      'phone': seller.phone,
+                      'txnAmount': _amount,
+                    },
+                  );
+                  Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => PaytmPaymentWebView(
+                        paymentId: json['paymentId'],
+                        paymentToken: json['paymentToken'],
+                      ),
+                      transitionDuration: Duration.zero,
+                    ),
+                  );
+                } catch (error) {
+                  print(error);
+                  Toast(
+                    message: 'Payment failed. Try again',
                     color: AppTheme.errorColor,
                   ).show(context);
                 } finally {
