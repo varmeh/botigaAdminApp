@@ -3,18 +3,21 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../util/index.dart' show AppTheme, Http;
-import '../widgets/index.dart' show LoaderOverlay;
+import '../../util/index.dart' show AppTheme, Http;
+import '../../widgets/index.dart' show LoaderOverlay;
+import '../../models/index.dart' show SellerModel;
 
 class PaytmPaymentWebView extends StatefulWidget {
   static const route = 'payment';
 
   final String paymentId;
   final String paymentToken;
+  final SellerModel seller;
 
   PaytmPaymentWebView({
     @required this.paymentId,
     @required this.paymentToken,
+    @required this.seller,
   });
 
   @override

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-import '../util/index.dart' show AppTheme, Http, TextStyleHelpers;
-import '../widgets/index.dart'
+import '../../util/index.dart' show AppTheme, Http, TextStyleHelpers;
+import '../../widgets/index.dart'
     show
         BotigaTextFieldForm,
         ActiveButton,
@@ -13,7 +13,7 @@ import '../widgets/index.dart'
         Toast,
         BotigaBottomModal;
 
-import '../models/index.dart' show SellerModel;
+import '../../models/index.dart' show SellerModel;
 import 'paytmPaymentWebView.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -473,6 +473,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       pageBuilder: (_, __, ___) => PaytmPaymentWebView(
                         paymentId: json['paymentId'],
                         paymentToken: json['paymentToken'],
+                        seller: seller,
                       ),
                       transitionDuration: Duration.zero,
                     ),

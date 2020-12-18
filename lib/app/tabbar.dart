@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../util/index.dart';
 
-import 'paymentScreen.dart';
+import 'payment/paymentScreen.dart';
 import 'sellerScreen.dart';
 
 class Tabbar extends StatefulWidget {
