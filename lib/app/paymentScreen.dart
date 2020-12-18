@@ -199,6 +199,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   labelText: 'Paytm MID',
                   onSave: null,
                   initialValue: seller.mid,
+                  readOnly: true,
                 ),
                 sizedBox,
                 _switchDetails(
@@ -217,6 +218,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   confirmationMessage:
                       'Has seller emailed you the snapshot of test payment?',
                 ),
+                sizedBox,
+                Row(
+                  children: [
+                    Expanded(
+                      child: PassiveButton(
+                        title: 'Update MID',
+                        onPressed: () => _patymMidModal().show(context),
+                      ),
+                    ),
+                    SizedBox(width: 20),
+                    Expanded(
+                      child: PassiveButton(
+                        title: 'Test Payment',
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           );
