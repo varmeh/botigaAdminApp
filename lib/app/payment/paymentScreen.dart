@@ -58,7 +58,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
         backgroundColor: AppTheme.backgroundColor,
         floatingActionButton: _getSellerDetails(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        appBar: BotigaAppBar('Payment Configuration'),
+        appBar: BotigaAppBar(
+          'Payment Configuration',
+          canPop: false,
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -479,7 +482,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                   );
                 } catch (error) {
-                  print(error);
                   Toast(
                     message: 'Payment failed. Try again',
                     color: AppTheme.errorColor,
