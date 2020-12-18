@@ -6,10 +6,12 @@ import '../widgets/index.dart'
     show
         BotigaTextFieldForm,
         ActiveButton,
+        PassiveButton,
         BotigaAppBar,
         LoaderOverlay,
         BotigaSwitch,
-        Toast;
+        Toast,
+        BotigaBottomModal;
 
 import '../models/index.dart' show SellerModel;
 
@@ -20,13 +22,30 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   GlobalKey<FormState> _phoneFormKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _paytmMidFormKey = GlobalKey<FormState>();
+
   bool _isLoading = false;
+  String _updatedMid;
   SellerModel seller;
+  TextEditingController _midTextEditingController;
 
   final _phoneMaskFormatter = MaskTextInputFormatter(
     mask: '+91 ##### #####',
     filter: {"#": RegExp(r'[0-9]')},
   );
+
+  @override
+  void initState() {
+    super.initState();
+
+    _midTextEditingController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _midTextEditingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,8 +217,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   focusNode: null,
                   labelText: 'Paytm MID',
                   onSave: null,
-                  initialValue: seller.mid,
                   readOnly: true,
+                  textEditingController: _midTextEditingController,
                 ),
                 sizedBox,
                 _switchDetails(
@@ -334,6 +353,69 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
+  BotigaBottomModal _patymMidModal() {
+    const sizedBox24 = SizedBox(height: 24);
+
+    return BotigaBottomModal(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Update MID',
+            style: AppTheme.textStyle.w700.color100.size(20.0).lineHeight(1.25),
+          ),
+          SizedBox(height: 24),
+          Form(
+            key: _paytmMidFormKey,
+            child: BotigaTextFieldForm(
+              focusNode: null,
+              labelText: 'Paytm MID',
+              onSave: (String val) => _updatedMid = val,
+              onFieldSubmitted: (String val) => _updatedMid = val,
+              validator: (val) {
+                if (val.isEmpty) {
+                  return 'Required';
+                }
+                return null;
+              },
+              initialValue: seller.mid,
+            ),
+          ),
+          sizedBox24,
+          ActiveButton(
+            title: 'Update',
+            onPressed: () async {
+              if (_paytmMidFormKey.currentState.validate()) {
+                setState(() => _isLoading = true);
+                try {
+                  final json = await Http.patch(
+                    '/api/admin/seller/bankDetails',
+                    body: {
+                      'phone': seller.phone,
+                      'mid': _updatedMid,
+                    },
+                  );
+                  seller = SellerModel.fromJson(json);
+                  Navigator.of(context).pop();
+                  Toast(message: 'MID updated').show(context);
+                  _midTextEditingController.text = _updatedMid;
+                } catch (error) {
+                  Toast(
+                    message: 'Mid update failed. Try again',
+                    color: AppTheme.errorColor,
+                  ).show(context);
+                } finally {
+                  setState(() => _isLoading = false);
+                }
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   bool _sellerDoesnotHaveBankDetails() =>
       seller == null || seller.beneficiaryName == null;
 
@@ -345,6 +427,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         final json = await Http.get(
             '/api/admin/seller/${_phoneMaskFormatter.getUnmaskedText()}');
         seller = SellerModel.fromJson(json);
+        _midTextEditingController.text = seller.mid;
       } catch (error) {
         Toast(message: Http.message(error)).show(context);
       } finally {
