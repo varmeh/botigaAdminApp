@@ -402,6 +402,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             title: 'Update',
             onPressed: () async {
               if (_paytmMidFormKey.currentState.validate()) {
+                _paytmMidFormKey.currentState.save();
                 setState(() => _isLoading = true);
                 try {
                   final json = await Http.patch(
@@ -457,12 +458,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               onSave: (String val) => _amount = val,
               onFieldSubmitted: (String val) => _amount = val,
               keyboardType: TextInputType.datetime,
-              validator: (val) {
-                if (val.isEmpty) {
-                  return 'Required';
-                }
-                return null;
-              },
+              validator: (val) => val.isEmpty ? 'Required' : null,
             ),
           ),
           sizedBox24,
@@ -470,6 +466,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             title: 'Continue',
             onPressed: () async {
               if (_testPaymentFormKey.currentState.validate()) {
+                _testPaymentFormKey.currentState.save();
                 setState(() => _isLoading = true);
                 try {
                   final json = await Http.post(
@@ -482,7 +479,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                   final options = {
                     'key': 'rzp_test_eB9RogNMlDSytd',
-                    'amount': _amount * 100,
+                    'amount': double.parse(_amount) * 100,
                     'name': seller.brand,
                     'order_id': json['orderId'],
                     'timeout': 60, // In secs,
@@ -509,6 +506,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   Future<void> _onSubmitted(BuildContext context) async {
     if (_phoneFormKey.currentState.validate()) {
+      _phoneFormKey.currentState.save();
       // Fetch seller info
       setState(() => _isLoading = true);
       try {
