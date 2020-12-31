@@ -478,7 +478,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   );
 
                   final options = {
-                    'key': 'rzp_test_eB9RogNMlDSytd',
+                    'key': 'rzp_live_U6Hf0upRNgYgtc',
                     'amount': double.parse(_amount) * 100,
                     'name': seller.brand,
                     'order_id': json['orderId'],
