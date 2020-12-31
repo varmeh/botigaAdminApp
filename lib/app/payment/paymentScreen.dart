@@ -61,10 +61,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Future<void> _showPaymentStatus(bool status, String txnId) async {
     setState(() => _isLoading = false);
 
-    await Http.post(
-      '/api/admin/transaction/test/notify',
-      body: {'phone': seller.phone, 'txnAmount': _amount, 'paymentId': txnId},
-    );
+    if (status) {
+      await Http.post(
+        '/api/admin/transaction/test/notify',
+        body: {'phone': seller.phone, 'txnAmount': _amount, 'paymentId': txnId},
+      );
+    }
 
     Navigator.pushAndRemoveUntil(
       context,
