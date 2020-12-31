@@ -9,7 +9,7 @@ import '../tabbar.dart';
 
 class PaymentStatusScreen extends StatelessWidget {
   final SellerModel seller;
-  final String status;
+  final bool status;
   final String txnId;
   final String txnAmount;
 
@@ -46,7 +46,7 @@ class PaymentStatusScreen extends StatelessWidget {
                 focusNode: null,
                 labelText: 'Txn Status',
                 onSave: null,
-                initialValue: status,
+                initialValue: status ? 'Success' : 'Failure',
                 readOnly: true,
               ),
               sizedBox,
@@ -66,7 +66,7 @@ class PaymentStatusScreen extends StatelessWidget {
                 readOnly: true,
               ),
               SizedBox(height: 48),
-              status == 'TXN_SUCCESS'
+              status
                   ? Row(
                       children: [
                         Expanded(

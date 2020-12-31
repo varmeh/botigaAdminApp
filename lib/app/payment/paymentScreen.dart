@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../util/index.dart' show AppTheme, Http, TextStyleHelpers;
 import '../../widgets/index.dart'
@@ -14,7 +15,7 @@ import '../../widgets/index.dart'
         BotigaBottomModal;
 
 import '../../models/index.dart' show SellerModel;
-import 'paytmPaymentWebView.dart';
+import './paymentStatusScreen.dart';
 
 class PaymentScreen extends StatefulWidget {
   @override
@@ -32,6 +33,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
   SellerModel seller;
   TextEditingController _midTextEditingController;
 
+  final _razorpay = Razorpay();
+
   final _phoneMaskFormatter = MaskTextInputFormatter(
     mask: '+91 ##### #####',
     filter: {"#": RegExp(r'[0-9]')},
@@ -42,11 +45,46 @@ class _PaymentScreenState extends State<PaymentScreen> {
     super.initState();
 
     _midTextEditingController = TextEditingController();
+
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    _showPaymentStatus(true, response.paymentId);
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    _showPaymentStatus(false, 'NA');
+  }
+
+  Future<void> _showPaymentStatus(bool status, String txnId) async {
+    setState(() => _isLoading = false);
+
+    await Http.post(
+      '/api/admin/transaction/test/notify',
+      body: {'phone': seller.phone, 'txnAmount': _amount, 'paymentId': txnId},
+    );
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => PaymentStatusScreen(
+          seller: seller,
+          status: status,
+          txnAmount: _amount,
+          txnId: txnId,
+        ),
+        transitionDuration: Duration.zero,
+      ),
+      (route) => false,
+    );
   }
 
   @override
   void dispose() {
     _midTextEditingController.dispose();
+    _razorpay.clear();
     super.dispose();
   }
 
@@ -441,24 +479,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       'txnAmount': _amount,
                     },
                   );
-                  Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => PaytmPaymentWebView(
-                        paymentId: json['paymentId'],
-                        paymentToken: json['paymentToken'],
-                        seller: seller,
-                      ),
-                      transitionDuration: Duration.zero,
-                    ),
-                  );
+
+                  final options = {
+                    'key': 'rzp_test_eB9RogNMlDSytd',
+                    'amount': _amount * 100,
+                    'name': seller.brand,
+                    'order_id': json['orderId'],
+                    'timeout': 60, // In secs,
+                    'prefill': {'contact': seller.phone, 'email': seller.email},
+                  };
+                  _razorpay.open(options);
                 } catch (error) {
+                  setState(() => _isLoading = false);
                   Toast(
                     message: 'Payment failed. Try again',
                     color: AppTheme.errorColor,
                   ).show(context);
-                } finally {
-                  setState(() => _isLoading = false);
                 }
               }
             },
