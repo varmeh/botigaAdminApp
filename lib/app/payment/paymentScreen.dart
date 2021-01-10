@@ -118,7 +118,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   height: 10,
                 ),
                 _sellerDetails(),
-                _divider,
+                seller != null ? _divider : Container(),
                 _fssaiDetails(),
                 _sellerDoesnotHaveBankDetails() ? Container() : _divider,
                 _bankDetails(),
