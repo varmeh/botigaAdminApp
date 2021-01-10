@@ -324,7 +324,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 sizedBox,
                 BotigaTextFieldForm(
                   focusNode: null,
-                  labelText: 'Paytm MID',
+                  labelText: 'Merchant MID',
                   onSave: null,
                   readOnly: true,
                   textEditingController: _midTextEditingController,
@@ -450,7 +450,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             key: _paytmMidFormKey,
             child: BotigaTextFieldForm(
               focusNode: null,
-              labelText: 'Paytm MID',
+              labelText: 'Merchant MID',
               onSave: (String val) => _updatedMid = val,
               onFieldSubmitted: (String val) => _updatedMid = val,
               validator: (val) {
