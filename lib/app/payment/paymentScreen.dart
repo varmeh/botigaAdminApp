@@ -546,9 +546,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     'key': 'rzp_live_U6Hf0upRNgYgtc',
                     'amount': double.parse(_amount) * 100,
                     'name': seller.brand,
-                    'order_id': json['orderId'],
+                    'order_id': json['id'],
                     'timeout': 60 * 3, // In secs,
-                    'prefill': {'contact': seller.phone, 'email': seller.email},
+                    'prefill': {
+                      'contact': seller.phone,
+                      'email': seller.email,
+                      'method': 'upi',
+                    },
                   };
                   _razorpay.open(options);
                 } catch (error) {
