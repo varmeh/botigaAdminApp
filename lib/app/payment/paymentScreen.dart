@@ -23,6 +23,14 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
+  final _divider = Padding(
+    padding: const EdgeInsets.symmetric(vertical: 32.0),
+    child: Divider(
+      thickness: 8.0,
+      color: AppTheme.dividerColor,
+    ),
+  );
+
   GlobalKey<FormState> _phoneFormKey = GlobalKey<FormState>();
   GlobalKey<FormState> _paytmMidFormKey = GlobalKey<FormState>();
   GlobalKey<FormState> _testPaymentFormKey = GlobalKey<FormState>();
@@ -110,15 +118,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   height: 10,
                 ),
                 _sellerDetails(),
-                _sellerDoesnotHaveBankDetails()
-                    ? Container()
-                    : Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 32.0),
-                        child: Divider(
-                          thickness: 8.0,
-                          color: AppTheme.dividerColor,
-                        ),
-                      ),
+                _divider,
+                _fssaiDetails(),
+                _sellerDoesnotHaveBankDetails() ? Container() : _divider,
                 _bankDetails(),
                 SizedBox(height: 152),
               ],
@@ -154,9 +156,25 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 sizedBox,
                 BotigaTextFieldForm(
                   focusNode: null,
+                  labelText: 'Business Type',
+                  onSave: null,
+                  initialValue: seller.businessType,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
                   labelText: 'Category',
                   onSave: null,
                   initialValue: seller.businessCategory,
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'GSTIN',
+                  onSave: null,
+                  initialValue: seller.gstin,
                   readOnly: true,
                 ),
                 sizedBox,
@@ -197,6 +215,51 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   labelText: 'Email',
                   onSave: null,
                   initialValue: seller.email,
+                  readOnly: true,
+                ),
+              ],
+            ),
+          );
+  }
+
+  Widget _fssaiDetails() {
+    const sizedBox = SizedBox(height: 16);
+    return seller == null
+        ? Container()
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Fssai Details',
+                  textAlign: TextAlign.start,
+                  style: AppTheme.textStyle.color100.w500.size(18.0),
+                ),
+                SizedBox(height: 24),
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Number',
+                  onSave: null,
+                  initialValue: seller.fssaiNumber ?? '',
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Validity Date',
+                  onSave: null,
+                  initialValue: seller.fssaiValidityDate != null
+                      ? seller.fssaiValidityDate.toLocal().toString()
+                      : '',
+                  readOnly: true,
+                ),
+                sizedBox,
+                BotigaTextFieldForm(
+                  focusNode: null,
+                  labelText: 'Certificate Url',
+                  onSave: null,
+                  initialValue: seller.fssaiCertificateUrl ?? '',
                   readOnly: true,
                 ),
               ],
@@ -484,7 +547,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     'amount': double.parse(_amount) * 100,
                     'name': seller.brand,
                     'order_id': json['orderId'],
-                    'timeout': 60, // In secs,
+                    'timeout': 60 * 3, // In secs,
                     'prefill': {'contact': seller.phone, 'email': seller.email},
                   };
                   _razorpay.open(options);

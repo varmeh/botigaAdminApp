@@ -6,7 +6,9 @@ part 'sellerModel.g.dart';
 @JsonSerializable()
 class SellerModel {
   final String businessName;
+  final String businessType;
   final String businessCategory;
+  final String gstin;
   final String owner;
   final String brand;
   final String tagline;
@@ -24,10 +26,15 @@ class SellerModel {
   final String accountType;
 
   final String mid;
+  final String fssaiNumber;
+  final DateTime fssaiValidityDate;
+  final String fssaiCertificateUrl;
 
   SellerModel({
     @required this.businessName,
+    this.businessType,
     @required this.businessCategory,
+    this.gstin,
     @required this.owner,
     @required this.brand,
     @required this.tagline,
@@ -43,6 +50,9 @@ class SellerModel {
     @required this.bankName,
     @required this.accountType,
     @required this.mid,
+    this.fssaiNumber,
+    this.fssaiValidityDate,
+    this.fssaiCertificateUrl,
   });
 
   factory SellerModel.fromJson(Map<String, dynamic> json) =>

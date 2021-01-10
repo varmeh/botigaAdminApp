@@ -9,7 +9,9 @@ part of 'sellerModel.dart';
 SellerModel _$SellerModelFromJson(Map<String, dynamic> json) {
   return SellerModel(
     businessName: json['businessName'] as String,
+    businessType: json['businessType'] as String,
     businessCategory: json['businessCategory'] as String,
+    gstin: json['gstin'] as String,
     owner: json['owner'] as String,
     brand: json['brand'] as String,
     tagline: json['tagline'] as String,
@@ -25,13 +27,20 @@ SellerModel _$SellerModelFromJson(Map<String, dynamic> json) {
     bankName: json['bankName'] as String,
     accountType: json['accountType'] as String,
     mid: json['mid'] as String,
+    fssaiNumber: json['fssaiNumber'] as String,
+    fssaiValidityDate: json['fssaiValidityDate'] == null
+        ? null
+        : DateTime.parse(json['fssaiValidityDate'] as String),
+    fssaiCertificateUrl: json['fssaiCertificateUrl'] as String,
   );
 }
 
 Map<String, dynamic> _$SellerModelToJson(SellerModel instance) =>
     <String, dynamic>{
       'businessName': instance.businessName,
+      'businessType': instance.businessType,
       'businessCategory': instance.businessCategory,
+      'gstin': instance.gstin,
       'owner': instance.owner,
       'brand': instance.brand,
       'tagline': instance.tagline,
@@ -47,4 +56,7 @@ Map<String, dynamic> _$SellerModelToJson(SellerModel instance) =>
       'bankName': instance.bankName,
       'accountType': instance.accountType,
       'mid': instance.mid,
+      'fssaiNumber': instance.fssaiNumber,
+      'fssaiValidityDate': instance.fssaiValidityDate?.toIso8601String(),
+      'fssaiCertificateUrl': instance.fssaiCertificateUrl,
     };
