@@ -5,3 +5,4 @@ export 'loaderOverlay.dart';
 export 'botigaSwitch.dart';
 export 'botigaBottomModal.dart';
 export 'buttons/index.dart';
+export 'searchBar.dart';

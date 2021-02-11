@@ -14,6 +14,7 @@ class ApartmentModel {
   @JsonKey(name: 'apartmentArea')
   final String area;
 
+  final bool live;
   final String deliveryMessage;
   final String deliverySlot;
 
@@ -21,6 +22,7 @@ class ApartmentModel {
     @required this.id,
     @required this.name,
     @required this.area,
+    this.live,
     this.deliveryMessage,
     this.deliverySlot,
   });

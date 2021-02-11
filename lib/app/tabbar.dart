@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import '../util/index.dart';
 
 import 'payment/sellerScreen.dart';
-import 'apartmentScreen.dart';
+import 'apartment/apartmentScreen.dart';
 
 class Tabbar extends StatefulWidget {
   static String route = 'tabbar';

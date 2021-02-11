@@ -11,6 +11,7 @@ ApartmentModel _$ApartmentModelFromJson(Map<String, dynamic> json) {
     id: json['_id'] as String,
     name: json['apartmentName'] as String,
     area: json['apartmentArea'] as String,
+    live: json['live'] as bool,
     deliveryMessage: json['deliveryMessage'] as String,
     deliverySlot: json['deliverySlot'] as String,
   );
@@ -21,6 +22,7 @@ Map<String, dynamic> _$ApartmentModelToJson(ApartmentModel instance) =>
       '_id': instance.id,
       'apartmentName': instance.name,
       'apartmentArea': instance.area,
+      'live': instance.live,
       'deliveryMessage': instance.deliveryMessage,
       'deliverySlot': instance.deliverySlot,
     };
