@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import 'apartmentModel.dart';
+
 part 'sellerModel.g.dart';
 
 @JsonSerializable()
@@ -16,6 +18,8 @@ class SellerModel {
   final String phone;
   final String whatsapp;
   final String email;
+
+  List<ApartmentModel> apartments;
 
   bool editable;
   bool verified;
@@ -53,6 +57,7 @@ class SellerModel {
     this.fssaiNumber,
     this.fssaiValidityDate,
     this.fssaiCertificateUrl,
+    this.apartments,
   });
 
   factory SellerModel.fromJson(Map<String, dynamic> json) =>

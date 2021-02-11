@@ -32,6 +32,11 @@ SellerModel _$SellerModelFromJson(Map<String, dynamic> json) {
         ? null
         : DateTime.parse(json['fssaiValidityDate'] as String),
     fssaiCertificateUrl: json['fssaiCertificateUrl'] as String,
+    apartments: (json['apartments'] as List)
+        ?.map((e) => e == null
+            ? null
+            : ApartmentModel.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
   );
 }
 
@@ -48,6 +53,7 @@ Map<String, dynamic> _$SellerModelToJson(SellerModel instance) =>
       'phone': instance.phone,
       'whatsapp': instance.whatsapp,
       'email': instance.email,
+      'apartments': instance.apartments,
       'editable': instance.editable,
       'verified': instance.verified,
       'beneficiaryName': instance.beneficiaryName,
