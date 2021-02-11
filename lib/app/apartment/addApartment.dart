@@ -2,6 +2,7 @@ import 'package:botigaAdminApp/provider/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../provider/index.dart' show SellerProvider;
 import '../../models/index.dart' show ApartmentServicesModel;
 import '../../util/index.dart' show AppTheme, TextStyleHelpers, Http;
 import '../../widgets/index.dart'
@@ -22,14 +23,21 @@ class AddApartment extends StatefulWidget {
 class _AddApartmentState extends State<AddApartment> {
   final List<ApartmentServicesModel> _apartments = [];
   String _query = '';
+  BotigaBottomModal _bottomModal;
+  bool _isLoading = false;
 
-  bool _loadApartment = true;
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration(milliseconds: 300), () => _getApartments());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: BotigaAppBar('Select your community'),
+      appBar: BotigaAppBar('Select apartment'),
       body: SafeArea(
         child: Container(
           color: AppTheme.backgroundColor,
@@ -41,50 +49,31 @@ class _AddApartmentState extends State<AddApartment> {
                 onSubmit: (value) {
                   setState(() {
                     _query = value;
-                    _loadApartment = true;
+                    _getApartments();
                   });
                 },
               ),
               SizedBox(height: 10.0),
-              Expanded(child: _searchList()),
+              Expanded(
+                child: LoaderOverlay(
+                  isLoading: _isLoading,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 4.0),
+                    child: ListView.builder(
+                      itemCount: _apartments.length + 1,
+                      itemBuilder: (context, index) {
+                        return index < _apartments.length
+                            ? _apartmentTile(index)
+                            : _missingApartmentMessage();
+                      },
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  FutureBuilder<void> _searchList() {
-    return FutureBuilder(
-      future: getApartments(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Column(
-              children: [
-                Text('Something went wrong!!!'),
-                SizedBox(height: 24),
-                ActiveButton(title: 'Retry', onPressed: () => setState(() {})),
-              ],
-            ),
-          );
-        } else {
-          return LoaderOverlay(
-            isLoading: snapshot.connectionState == ConnectionState.waiting,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 4.0),
-              child: ListView.builder(
-                itemCount: _apartments.length + 1,
-                itemBuilder: (context, index) {
-                  return index < _apartments.length
-                      ? _apartmentTile(index)
-                      : _missingApartmentMessage();
-                },
-              ),
-            ),
-          );
-        }
-      },
     );
   }
 
@@ -137,29 +126,28 @@ class _AddApartmentState extends State<AddApartment> {
     );
   }
 
-  Future<void> getApartments() async {
-    if (_loadApartment == true) {
-      try {
-        final json =
-            await Http.get('/api/services/apartments/search?text=$_query');
-        _apartments.clear();
-        json.forEach((apartment) {
-          bool isApartmentAdded =
-              Provider.of<SellerProvider>(context, listen: false)
-                      .seller
-                      .apartments
-                      .firstWhere((apt) => apt.id == apartment['_id'],
-                          orElse: () => null) ==
-                  null;
-          if (isApartmentAdded == true) {
-            _apartments.add(ApartmentServicesModel.fromJson(apartment));
-          }
-        });
-      } catch (error) {
-        Toast(message: Http.message(error)).show(context);
-      } finally {
-        setState(() => _loadApartment = false);
-      }
+  Future<void> _getApartments() async {
+    setState(() => _isLoading = true);
+    try {
+      final json =
+          await Http.get('/api/services/apartments/search?text=$_query');
+      _apartments.clear();
+      json.forEach((apartment) {
+        bool isApartmentAdded =
+            Provider.of<SellerProvider>(context, listen: false)
+                    .seller
+                    .apartments
+                    .firstWhere((apt) => apt.id == apartment['_id'],
+                        orElse: () => null) ==
+                null;
+        if (isApartmentAdded == true) {
+          _apartments.add(ApartmentServicesModel.fromJson(apartment));
+        }
+      });
+    } catch (error) {
+      Toast(message: Http.message(error)).show(context);
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
@@ -167,13 +155,13 @@ class _AddApartmentState extends State<AddApartment> {
       BuildContext context, ApartmentServicesModel apartment) {
     const sizedBox24 = SizedBox(height: 24);
 
-    final _bottomModal = BotigaBottomModal(
+    _bottomModal = BotigaBottomModal(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Confirm Apartment',
+            'Add Apartment',
             style: AppTheme.textStyle.w600.color100.size(20.0).lineHeight(1.25),
           ),
           sizedBox24,
@@ -189,7 +177,18 @@ class _AddApartmentState extends State<AddApartment> {
           sizedBox24,
           ActiveButton(
             title: 'Continue',
-            onPressed: () => {},
+            onPressed: () async {
+              try {
+                _bottomModal.animation(true);
+                await Provider.of<SellerProvider>(context, listen: false)
+                    .addApartment(apartment.id);
+              } catch (error) {
+                Toast(message: Http.message(error)).show(context);
+              } finally {
+                _bottomModal.animation(false);
+                Navigator.popUntil(context, (route) => route.isFirst);
+              }
+            },
           ),
         ],
       ),

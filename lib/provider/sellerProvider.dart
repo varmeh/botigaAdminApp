@@ -11,6 +11,7 @@ class SellerProvider with ChangeNotifier {
   Future<void> getSeller(String phone) async {
     final json = await Http.get('/api/admin/seller/$phone');
     seller = SellerModel.fromJson(json);
+    notifyListeners();
   }
 
   void removeSeller() {
@@ -67,5 +68,33 @@ class SellerProvider with ChangeNotifier {
       },
     );
     seller = SellerModel.fromJson(json);
+  }
+
+  Future<void> addApartment(String apartmentId) async {
+    await Http.post(
+      '/api/admin/seller/apartment',
+      body: {
+        'phone': seller.phone,
+        'apartmentId': apartmentId,
+      },
+    );
+    await getSeller(seller.phone);
+  }
+
+  Future<void> removeApartment(String apartmentId) async {
+    await Http.delete(
+        '/api/admin/seller/${seller.phone}/apartments/$apartmentId');
+    await getSeller(seller.phone);
+  }
+
+  Future<void> updateApartmentStatus(String apartmentId, bool live) async {
+    await Http.patch(
+      '/api/admin/seller/apartment/live',
+      body: {
+        'phone': seller.phone,
+        'apartmentId': apartmentId,
+        'live': live,
+      },
+    );
   }
 }

@@ -48,6 +48,7 @@ class _ApartmentScreenState extends State<ApartmentScreen> {
                 return ApartmentTile(
                   apartment: provider.seller.apartments[index],
                   changeApartmentStatusFunction: onApartmentStatusChange,
+                  removeApartmentFunction: removeApartment,
                 );
               },
             ),
@@ -89,12 +90,11 @@ class _ApartmentScreenState extends State<ApartmentScreen> {
   }
 
   void onApartmentStatusChange(
-      String aptId, bool value, Function onFail) async {
+      String apartmentId, bool live, Function onFail) async {
     setState(() => _isLoading = true);
     try {
-      // final provider = Provider.of<SellerProvider>(context, listen: false);
-      // await provider.setApartmentStatus(aptId, value);
-      // await provider.fetchProfile();
+      await Provider.of<SellerProvider>(context, listen: false)
+          .updateApartmentStatus(apartmentId, live);
       Toast(
         message: 'Community status updated',
         icon: Icon(
@@ -105,6 +105,26 @@ class _ApartmentScreenState extends State<ApartmentScreen> {
       ).show(context);
     } catch (err) {
       onFail();
+      Toast(message: Http.message(err)).show(context);
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void removeApartment(String apartmentId) async {
+    setState(() => _isLoading = true);
+    try {
+      await Provider.of<SellerProvider>(context, listen: false)
+          .removeApartment(apartmentId);
+      Toast(
+        message: 'Apartment Removed',
+        icon: Icon(
+          Icons.check_circle,
+          size: 24,
+          color: AppTheme.backgroundColor,
+        ),
+      ).show(context);
+    } catch (err) {
       Toast(message: Http.message(err)).show(context);
     } finally {
       setState(() => _isLoading = false);

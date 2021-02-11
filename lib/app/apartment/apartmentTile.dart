@@ -8,10 +8,12 @@ import '../../widgets/index.dart' show BotigaSwitch;
 class ApartmentTile extends StatefulWidget {
   final ApartmentModel apartment;
   final Function changeApartmentStatusFunction;
+  final Function removeApartmentFunction;
 
   ApartmentTile({
     @required this.apartment,
     @required this.changeApartmentStatusFunction,
+    @required this.removeApartmentFunction,
   });
 
   @override
@@ -104,7 +106,34 @@ class _ApartmentTileState extends State<ApartmentTile> {
                 ],
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text(
+                        'Remove Apartment',
+                        style: AppTheme.textStyle.w500.color100,
+                      ),
+                      content: Text(
+                        'Are you sure you want to remove this apartment?',
+                        style: AppTheme.textStyle.w400.color100,
+                      ),
+                      actions: [
+                        FlatButton(
+                          child: Text(
+                            'Confirm',
+                            style: AppTheme.textStyle.w600
+                                .colored(AppTheme.errorColor),
+                          ),
+                          onPressed: () async {
+                            widget.removeApartmentFunction(widget.apartment.id);
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
                 child: Text(
                   'REMOVE',
                   style: AppTheme.textStyle
