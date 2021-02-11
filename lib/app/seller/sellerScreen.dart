@@ -9,7 +9,6 @@ import '../../widgets/index.dart'
         BotigaTextFieldForm,
         ActiveButton,
         PassiveButton,
-        BotigaAppBar,
         LoaderOverlay,
         BotigaSwitch,
         Toast,
