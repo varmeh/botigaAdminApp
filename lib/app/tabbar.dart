@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../util/index.dart';
 
-import 'payment/paymentScreen.dart';
-import 'sellerScreen.dart';
+import 'payment/sellerScreen.dart';
+import 'apartmentScreen.dart';
 
 class Tabbar extends StatefulWidget {
   static String route = 'tabbar';
@@ -21,8 +21,8 @@ class _TabbarState extends State<Tabbar> with WidgetsBindingObserver {
   int _selectedIndex;
 
   List<Widget> _selectedTab = [
-    PaymentScreen(),
     SellerScreen(),
+    ApartmentScreen(),
   ];
 
   void changeTab(int index) {
@@ -64,12 +64,12 @@ class _TabbarState extends State<Tabbar> with WidgetsBindingObserver {
         type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: const Icon(Icons.payment),
-            label: 'Payment',
+            icon: const Icon(Icons.person),
+            label: 'Seller',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
-            label: 'Person',
+            icon: const Icon(Icons.add_business),
+            label: 'Apartment',
           ),
         ],
         currentIndex: _selectedIndex,

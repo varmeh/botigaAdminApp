@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import './provider/index.dart' show SellerProvider;
 import './app/tabbar.dart';
 
 Future<void> main() async {
@@ -14,7 +16,14 @@ Future<void> main() async {
     ],
   );
 
-  runApp(BotigaAdminApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => SellerProvider())
+      ],
+      child: BotigaAdminApp(),
+    ),
+  );
 }
 
 class BotigaAdminApp extends StatelessWidget {

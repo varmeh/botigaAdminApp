@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class Http {
-  static final _baseUrl = 'https://prod.botiga.app';
+  static final _baseUrl = 'https://prod1.botiga.app';
 
   static Map<String, String> _globalHeaders = {
     'Content-type': 'application/json',

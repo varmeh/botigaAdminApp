@@ -77,7 +77,7 @@ class PaymentStatusScreen extends StatelessWidget {
                           child: WhatsappButton(
                             number: seller.whatsapp,
                             message:
-                                'Team Botiga has successfully done a test transaction of amount $txnAmount to your account.\nTransactionId for this transaction is $txnId.\nPlease confirm once money is credited to your account.\nOnly then, we would enable your account for community activations.\nThank you',
+                                'Team Botiga has successfully done a test transaction of amount ₹11/- to your account.\nYou should expect a credit of ₹10.99/- to your account by 3PM, day after tomorrow.\nPlease share the screenshot of the bank credit with Botiga via email - support@botiga.app, to enable your account for community activations.\nThank you',
                           ),
                         ),
                       ],

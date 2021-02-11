@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:provider/provider.dart';
 
 import '../../util/index.dart' show AppTheme, Http, TextStyleHelpers;
 import '../../widgets/index.dart'
@@ -14,15 +15,17 @@ import '../../widgets/index.dart'
         Toast,
         BotigaBottomModal;
 
-import '../../models/index.dart' show SellerModel;
-import './paymentStatusScreen.dart';
+import '../../provider/index.dart' show SellerProvider;
 
-class PaymentScreen extends StatefulWidget {
+import '../../models/index.dart' show SellerModel;
+import 'paymentStatusScreen.dart';
+
+class SellerScreen extends StatefulWidget {
   @override
-  _PaymentScreenState createState() => _PaymentScreenState();
+  _SellerScreenState createState() => _SellerScreenState();
 }
 
-class _PaymentScreenState extends State<PaymentScreen> {
+class _SellerScreenState extends State<SellerScreen> {
   final _divider = Padding(
     padding: const EdgeInsets.symmetric(vertical: 32.0),
     child: Divider(
@@ -38,7 +41,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   bool _isLoading = false;
   String _updatedMid;
   String _amount;
-  SellerModel seller;
   TextEditingController _midTextEditingController;
 
   final _razorpay = Razorpay();
@@ -69,18 +71,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Future<void> _showPaymentStatus(bool status, String txnId) async {
     setState(() => _isLoading = false);
 
+    final provider = Provider.of<SellerProvider>(context, listen: false);
+
     if (status) {
-      await Http.post(
-        '/api/admin/transaction/test/notify',
-        body: {'phone': seller.phone, 'txnAmount': _amount, 'paymentId': txnId},
-      );
+      await provider.notifySellerOfSuccessfulTestTransaction(_amount, txnId);
     }
 
     Navigator.pushAndRemoveUntil(
       context,
       PageRouteBuilder(
         pageBuilder: (_, __, ___) => PaymentStatusScreen(
-          seller: seller,
+          seller: provider.seller,
           status: status,
           txnAmount: _amount,
           txnId: txnId,
@@ -100,28 +101,28 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<SellerProvider>(context, listen: false);
+
     return LoaderOverlay(
       isLoading: _isLoading,
       child: Scaffold(
         backgroundColor: AppTheme.backgroundColor,
-        floatingActionButton: _getSellerDetails(context),
+        floatingActionButton: _getSellerDetails(context, provider),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         appBar: BotigaAppBar(
-          'Payment Configuration',
+          'Seller Profile',
           canPop: false,
         ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(
-                  height: 10,
-                ),
-                _sellerDetails(),
-                seller != null ? _divider : Container(),
-                _fssaiDetails(),
-                _sellerDoesnotHaveBankDetails() ? Container() : _divider,
-                _bankDetails(),
+                SizedBox(height: 10),
+                _sellerDetails(provider.seller),
+                provider.hasSeller ? _divider : Container(),
+                _fssaiDetails(provider.seller),
+                provider.hasSeller ? _divider : Container(),
+                _bankDetails(provider.seller),
                 SizedBox(height: 152),
               ],
             ),
@@ -131,7 +132,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  Widget _sellerDetails() {
+  Widget _sellerDetails(SellerModel seller) {
     const sizedBox = SizedBox(height: 16);
     return seller == null
         ? Container()
@@ -222,7 +223,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           );
   }
 
-  Widget _fssaiDetails() {
+  Widget _fssaiDetails(SellerModel seller) {
     const sizedBox = SizedBox(height: 16);
     return seller == null
         ? Container()
@@ -267,9 +268,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
           );
   }
 
-  Widget _bankDetails() {
+  Widget _bankDetails(SellerModel seller) {
     const sizedBox = SizedBox(height: 16);
-    return _sellerDoesnotHaveBankDetails()
+
+    _midTextEditingController.text = seller == null ? '' : seller.mid;
+
+    return seller == null
         ? Container()
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -286,7 +290,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   focusNode: null,
                   labelText: 'Beneficiary Name',
                   onSave: null,
-                  initialValue: seller.beneficiaryName,
+                  initialValue: seller?.beneficiaryName,
                   readOnly: true,
                 ),
                 sizedBox,
@@ -294,7 +298,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   focusNode: null,
                   labelText: 'Account Number',
                   onSave: null,
-                  initialValue: seller.accountNumber,
+                  initialValue: seller?.accountNumber,
                   readOnly: true,
                 ),
                 sizedBox,
@@ -302,7 +306,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   focusNode: null,
                   labelText: 'IFSC',
                   onSave: null,
-                  initialValue: seller.ifscCode,
+                  initialValue: seller?.ifscCode,
                   readOnly: true,
                 ),
                 sizedBox,
@@ -310,7 +314,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   focusNode: null,
                   labelText: 'Bank',
                   onSave: null,
-                  initialValue: seller.bankName,
+                  initialValue: seller?.bankName,
                   readOnly: true,
                 ),
                 sizedBox,
@@ -318,7 +322,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   focusNode: null,
                   labelText: 'Account Type',
                   onSave: null,
-                  initialValue: seller.accountType,
+                  initialValue: seller?.accountType,
                   readOnly: true,
                 ),
                 sizedBox,
@@ -333,7 +337,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 _switchDetails(
                   title: 'Authorize Bank Details Update',
                   subTitle: 'Permission Necessary for Bank Update',
-                  initialValue: seller.editable,
+                  initialValue: seller?.editable ?? false,
                   onChange: (bool val) => _toggleEditable(val),
                   confirmationMessage:
                       'Are you sure you want to make account editable',
@@ -341,7 +345,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 _switchDetails(
                   title: 'Seller Account Verified',
                   subTitle: 'Seller can\'t go live unless verified',
-                  initialValue: seller.verified,
+                  initialValue: seller?.verified ?? false,
                   onChange: (bool val) => _toggleVerified(val),
                   confirmationMessage:
                       'Has seller emailed you the snapshot of test payment?',
@@ -394,15 +398,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  Widget _getSellerDetails(BuildContext context) {
+  Widget _getSellerDetails(BuildContext context, SellerProvider provider) {
     return Padding(
       padding: const EdgeInsets.only(
         bottom: 10.0,
         left: 20.0,
         right: 20.0,
       ),
-      child: seller == null
-          ? Form(
+      child: provider.hasSeller
+          ? ActiveButton(
+              title: 'Change Seller',
+              width: 200,
+              onPressed: () {
+                provider.removeSeller();
+                _phoneMaskFormatter.clear();
+                setState(() {});
+              },
+            )
+          : Form(
               key: _phoneFormKey,
               child: BotigaTextFieldForm(
                 focusNode: null,
@@ -421,20 +434,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 },
                 maskFormatter: _phoneMaskFormatter,
               ),
-            )
-          : ActiveButton(
-              title: 'Change Seller',
-              width: 200,
-              onPressed: () {
-                _phoneMaskFormatter.clear();
-                setState(() => seller = null);
-              },
             ),
     );
   }
 
   BotigaBottomModal _patymMidModal() {
     const sizedBox24 = SizedBox(height: 24);
+    final provider = Provider.of<SellerProvider>(context, listen: false);
 
     return BotigaBottomModal(
       child: Column(
@@ -459,7 +465,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 }
                 return null;
               },
-              initialValue: seller.mid,
+              initialValue: provider.seller.mid,
             ),
           ),
           sizedBox24,
@@ -470,14 +476,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 _paytmMidFormKey.currentState.save();
                 setState(() => _isLoading = true);
                 try {
-                  final json = await Http.patch(
-                    '/api/admin/seller/bankDetails',
-                    body: {
-                      'phone': seller.phone,
-                      'mid': _updatedMid,
-                    },
-                  );
-                  seller = SellerModel.fromJson(json);
+                  await Provider.of<SellerProvider>(context, listen: false)
+                      .updateMid(_updatedMid);
+
                   Navigator.of(context).pop();
                   Toast(message: 'MID updated').show(context);
                   _midTextEditingController.text = _updatedMid;
@@ -499,6 +500,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   BotigaBottomModal _testPaymentModal() {
     const sizedBox24 = SizedBox(height: 24);
+    final provider = Provider.of<SellerProvider>(context, listen: false);
 
     return BotigaBottomModal(
       child: Column(
@@ -534,23 +536,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 _testPaymentFormKey.currentState.save();
                 setState(() => _isLoading = true);
                 try {
-                  final json = await Http.post(
-                    '/api/admin/transaction/test',
-                    body: {
-                      'phone': seller.phone,
-                      'txnAmount': _amount,
-                    },
-                  );
+                  final orderId =
+                      await Provider.of<SellerProvider>(context, listen: false)
+                          .getTestOrderId(_amount);
 
                   final options = {
                     'key': 'rzp_live_U6Hf0upRNgYgtc',
                     'amount': double.parse(_amount) * 100,
-                    'name': seller.brand,
-                    'order_id': json['id'],
+                    'name': provider.seller.brand,
+                    'order_id': orderId,
                     'timeout': 60 * 3, // In secs,
                     'prefill': {
-                      'contact': seller.phone,
-                      'email': seller.email,
+                      'contact': provider.seller.phone,
+                      'email': provider.seller.email,
                       'method': 'upi',
                     },
                   };
@@ -570,19 +568,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  bool _sellerDoesnotHaveBankDetails() =>
-      seller == null || seller.beneficiaryName == null;
-
   Future<void> _onSubmitted(BuildContext context) async {
     if (_phoneFormKey.currentState.validate()) {
       _phoneFormKey.currentState.save();
       // Fetch seller info
       setState(() => _isLoading = true);
       try {
-        final json = await Http.get(
-            '/api/admin/seller/${_phoneMaskFormatter.getUnmaskedText()}');
-        seller = SellerModel.fromJson(json);
-        _midTextEditingController.text = seller.mid;
+        final provider = Provider.of<SellerProvider>(context, listen: false);
+        await provider.getSeller(_phoneMaskFormatter.getUnmaskedText());
+        _midTextEditingController.text = provider.seller.mid;
       } catch (error) {
         Toast(message: Http.message(error)).show(context);
       } finally {
@@ -592,61 +586,34 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Future<void> _toggleEditable(bool value) async {
-    setState(() {
-      seller.editable = value;
-      _isLoading = true;
-    });
-    bool _error = false;
+    setState(() => _isLoading = true);
     try {
-      final json = await Http.patch(
-        '/api/admin/seller/bankDetails',
-        body: {
-          'phone': seller.phone,
-          'editable': value,
-        },
-      );
-      seller = SellerModel.fromJson(json);
+      await Provider.of<SellerProvider>(context, listen: false)
+          .bankDetailsEditable(value);
       Toast(message: 'Bank Details Editable').show(context);
     } catch (error) {
       Toast(
         message: 'Update failed. Try again',
         color: AppTheme.errorColor,
       ).show(context);
-      _error = true;
     } finally {
-      if (_error) {
-        seller.editable = !value;
-      }
       setState(() => _isLoading = false);
     }
   }
 
   Future<void> _toggleVerified(bool value) async {
-    setState(() {
-      seller.verified = value;
-      _isLoading = true;
-    });
-    bool _error = false;
+    setState(() => _isLoading = true);
+
     try {
-      final json = await Http.patch(
-        '/api/admin/seller/bankDetails',
-        body: {
-          'phone': seller.phone,
-          'verified': value,
-        },
-      );
-      seller = SellerModel.fromJson(json);
+      await Provider.of<SellerProvider>(context, listen: false)
+          .bankDetailsVerified(value);
       Toast(message: 'Bank Details Verified').show(context);
     } catch (error) {
       Toast(
         message: 'Update failed. Try again',
         color: AppTheme.errorColor,
       ).show(context);
-      _error = true;
     } finally {
-      if (_error) {
-        seller.verified = !value;
-      }
       setState(() => _isLoading = false);
     }
   }
