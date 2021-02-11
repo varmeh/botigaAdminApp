@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animations/animations.dart';
 
-import '../../util/index.dart';
-import '../../widgets/index.dart' show LoaderOverlay, Toast;
-import '../../provider/index.dart' show SellerProvider;
+import '../../../util/index.dart';
+import '../../../widgets/index.dart' show LoaderOverlay, Toast, BotigaAppBar;
+import '../../../provider/index.dart' show SellerProvider;
 
 import 'apartmentTile.dart';
 import 'addApartment.dart';
@@ -34,6 +34,7 @@ class _ApartmentScreenState extends State<ApartmentScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
+      appBar: BotigaAppBar('Seller Apartments'),
       floatingActionButton: _addCommunityButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: LoaderOverlay(

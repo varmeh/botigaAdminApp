@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../util/index.dart';
-import '../../models/index.dart' show ApartmentModel;
-import '../../widgets/index.dart' show BotigaSwitch;
+import '../../../util/index.dart';
+import '../../../models/index.dart' show ApartmentModel;
+import '../../../widgets/index.dart' show BotigaSwitch;
 
 class ApartmentTile extends StatefulWidget {
   final ApartmentModel apartment;

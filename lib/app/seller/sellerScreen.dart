@@ -20,6 +20,8 @@ import '../../provider/index.dart' show SellerProvider;
 import '../../models/index.dart' show SellerModel;
 import 'paymentStatusScreen.dart';
 
+import './apartment/apartmentScreen.dart';
+
 class SellerScreen extends StatefulWidget {
   @override
   _SellerScreenState createState() => _SellerScreenState();
@@ -109,10 +111,6 @@ class _SellerScreenState extends State<SellerScreen> {
         backgroundColor: AppTheme.backgroundColor,
         floatingActionButton: _getSellerDetails(context, provider),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        appBar: BotigaAppBar(
-          'Seller Profile',
-          canPop: false,
-        ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -218,6 +216,28 @@ class _SellerScreenState extends State<SellerScreen> {
                   initialValue: seller.email,
                   readOnly: true,
                 ),
+                SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ActiveButton(
+                        title: 'Apartments',
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ApartmentScreen(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 24),
+                    Expanded(
+                      child: ActiveButton(
+                        title: 'Store',
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           );
@@ -406,14 +426,26 @@ class _SellerScreenState extends State<SellerScreen> {
         right: 20.0,
       ),
       child: provider.hasSeller
-          ? ActiveButton(
-              title: 'Change Seller',
-              width: 200,
-              onPressed: () {
-                provider.removeSeller();
-                _phoneMaskFormatter.clear();
-                setState(() {});
-              },
+          ? Padding(
+              padding: EdgeInsets.only(bottom: 28.0),
+              child: FloatingActionButton.extended(
+                backgroundColor: AppTheme.backgroundColor,
+                elevation: 4.0,
+                icon: const Icon(Icons.logout, color: Color(0xff179F57)),
+                label: Text(
+                  'Change Seller',
+                  style: AppTheme.textStyle
+                      .size(15)
+                      .w700
+                      .letterSpace(1)
+                      .colored(AppTheme.primaryColor),
+                ),
+                onPressed: () {
+                  provider.removeSeller();
+                  _phoneMaskFormatter.clear();
+                  setState(() {});
+                },
+              ),
             )
           : Form(
               key: _phoneFormKey,

@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../util/index.dart';
 
-import 'payment/sellerScreen.dart';
-import 'apartment/apartmentScreen.dart';
+import 'seller/sellerScreen.dart';
+import 'marketing/apartmentListScreen.dart';
 
 class Tabbar extends StatefulWidget {
   static String route = 'tabbar';
@@ -22,7 +22,7 @@ class _TabbarState extends State<Tabbar> with WidgetsBindingObserver {
 
   List<Widget> _selectedTab = [
     SellerScreen(),
-    ApartmentScreen(),
+    ApartmentListScreen(),
   ];
 
   void changeTab(int index) {
@@ -68,8 +68,8 @@ class _TabbarState extends State<Tabbar> with WidgetsBindingObserver {
             label: 'Seller',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.add_business),
-            label: 'Apartment',
+            icon: const Icon(Icons.monetization_on_outlined),
+            label: 'Marketing',
           ),
         ],
         currentIndex: _selectedIndex,

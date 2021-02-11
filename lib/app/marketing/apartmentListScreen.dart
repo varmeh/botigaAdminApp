@@ -1,29 +1,18 @@
-import 'package:botigaAdminApp/provider/index.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../provider/index.dart' show SellerProvider;
+import '../../util/index.dart';
 import '../../models/index.dart' show ApartmentServicesModel;
-import '../../util/index.dart' show AppTheme, TextStyleHelpers, Http;
 import '../../widgets/index.dart'
-    show
-        BotigaAppBar,
-        SearchBar,
-        LoaderOverlay,
-        Toast,
-        ActiveButton,
-        BotigaBottomModal;
+    show BotigaAppBar, SearchBar, LoaderOverlay, Toast;
 
-class AddApartment extends StatefulWidget {
-  static const routeName = 'addApartment';
+class ApartmentListScreen extends StatefulWidget {
   @override
-  _AddApartmentState createState() => _AddApartmentState();
+  _ApartmentListScreenState createState() => _ApartmentListScreenState();
 }
 
-class _AddApartmentState extends State<AddApartment> {
+class _ApartmentListScreenState extends State<ApartmentListScreen> {
   final List<ApartmentServicesModel> _apartments = [];
   String _query = '';
-  BotigaBottomModal _bottomModal;
   bool _isLoading = false;
 
   @override
@@ -37,7 +26,7 @@ class _AddApartmentState extends State<AddApartment> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: BotigaAppBar('Select apartment'),
+      appBar: BotigaAppBar('Apartments'),
       body: SafeArea(
         child: Container(
           color: AppTheme.backgroundColor,
@@ -45,7 +34,7 @@ class _AddApartmentState extends State<AddApartment> {
           child: Column(
             children: [
               SearchBar(
-                placeholder: 'Apartment / Area / City / Pincode',
+                placeholder: 'Filter',
                 onSubmit: (value) {
                   setState(() {
                     _query = value;
@@ -81,9 +70,7 @@ class _AddApartmentState extends State<AddApartment> {
     final apartment = _apartments[index];
 
     return GestureDetector(
-      onTap: () {
-        _showConfirmationBottomSheet(context, apartment);
-      },
+      onTap: () {},
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -132,69 +119,15 @@ class _AddApartmentState extends State<AddApartment> {
       final json =
           await Http.get('/api/services/apartments/search?text=$_query');
       _apartments.clear();
-      json.forEach((apartment) {
-        bool isApartmentAdded =
-            Provider.of<SellerProvider>(context, listen: false)
-                    .seller
-                    .apartments
-                    .firstWhere((apt) => apt.id == apartment['_id'],
-                        orElse: () => null) ==
-                null;
-        if (isApartmentAdded == true) {
-          _apartments.add(ApartmentServicesModel.fromJson(apartment));
-        }
-      });
+      json.forEach(
+        (apartment) => _apartments.add(
+          ApartmentServicesModel.fromJson(apartment),
+        ),
+      );
     } catch (error) {
       Toast(message: Http.message(error)).show(context);
     } finally {
       setState(() => _isLoading = false);
     }
-  }
-
-  void _showConfirmationBottomSheet(
-      BuildContext context, ApartmentServicesModel apartment) {
-    const sizedBox24 = SizedBox(height: 24);
-
-    _bottomModal = BotigaBottomModal(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Add Apartment',
-            style: AppTheme.textStyle.w600.color100.size(20.0).lineHeight(1.25),
-          ),
-          sizedBox24,
-          Text(
-            apartment.name,
-            style: AppTheme.textStyle.w500.color100.size(17.0).lineHeight(1.3),
-          ),
-          SizedBox(height: 8.0),
-          Text(
-            '${apartment.area}, ${apartment.city}, ${apartment.state} - ${apartment.pincode}',
-            style: AppTheme.textStyle.w500.color50.size(13.0).lineHeight(1.5),
-          ),
-          sizedBox24,
-          ActiveButton(
-            title: 'Continue',
-            onPressed: () async {
-              try {
-                _bottomModal.animation(true);
-                await Provider.of<SellerProvider>(context, listen: false)
-                    .addApartment(apartment.id);
-              } catch (error) {
-                Toast(message: Http.message(error)).show(context);
-              } finally {
-                _bottomModal.animation(false);
-                Navigator.popUntil(context, (route) => route.isFirst);
-              }
-            },
-          ),
-        ],
-      ),
-    );
-
-    // Show bottom modal
-    _bottomModal.show(context);
   }
 }
