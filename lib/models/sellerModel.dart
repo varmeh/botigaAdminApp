@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'apartmentModel.dart';
+import 'categoryModel.dart';
 
 part 'sellerModel.g.dart';
 
@@ -34,6 +35,8 @@ class SellerModel {
   final DateTime fssaiValidityDate;
   final String fssaiCertificateUrl;
 
+  List<CategoryModel> categories;
+
   SellerModel({
     @required this.businessName,
     this.businessType,
@@ -58,6 +61,7 @@ class SellerModel {
     this.fssaiValidityDate,
     this.fssaiCertificateUrl,
     this.apartments,
+    this.categories,
   });
 
   factory SellerModel.fromJson(Map<String, dynamic> json) =>
