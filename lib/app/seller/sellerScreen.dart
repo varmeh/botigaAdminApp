@@ -17,9 +17,10 @@ import '../../widgets/index.dart'
 import '../../provider/index.dart' show SellerProvider;
 
 import '../../models/index.dart' show SellerModel;
-import 'paymentStatusScreen.dart';
 
+import './store/storeScreen.dart';
 import './apartment/apartmentScreen.dart';
+import 'paymentStatusScreen.dart';
 
 class SellerScreen extends StatefulWidget {
   @override
@@ -232,7 +233,14 @@ class _SellerScreenState extends State<SellerScreen> {
                     Expanded(
                       child: ActiveButton(
                         title: 'Store',
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => StoreScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],

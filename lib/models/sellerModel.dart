@@ -34,6 +34,7 @@ class SellerModel {
   final String fssaiNumber;
   final DateTime fssaiValidityDate;
   final String fssaiCertificateUrl;
+  final String address;
 
   List<CategoryModel> categories;
 
@@ -62,6 +63,7 @@ class SellerModel {
     this.fssaiCertificateUrl,
     this.apartments,
     this.categories,
+    this.address,
   });
 
   factory SellerModel.fromJson(Map<String, dynamic> json) =>

@@ -42,6 +42,7 @@ SellerModel _$SellerModelFromJson(Map<String, dynamic> json) {
             ? null
             : CategoryModel.fromJson(e as Map<String, dynamic>))
         ?.toList(),
+    address: json['address'] as String,
   );
 }
 
