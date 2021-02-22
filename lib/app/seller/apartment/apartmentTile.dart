@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../util/index.dart';
-import '../../../models/index.dart' show ApartmentModel;
+import '../../../models/index.dart' show SellerApartmentModel;
 import '../../../widgets/index.dart' show BotigaSwitch;
 
 class ApartmentTile extends StatefulWidget {
-  final ApartmentModel apartment;
+  final SellerApartmentModel apartment;
   final Function changeApartmentStatusFunction;
   final Function removeApartmentFunction;
 

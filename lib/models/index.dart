@@ -1,5 +1,5 @@
 export 'sellerModel.dart';
-export 'apartmentModel.dart';
+export 'sellerApartmentModel.dart';
 export 'apartmentServicesModel.dart';
 export 'categoryModel.dart';
 export 'productModel.dart';

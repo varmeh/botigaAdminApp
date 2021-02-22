@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'apartmentModel.dart';
+part of 'sellerApartmentModel.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ApartmentModel _$ApartmentModelFromJson(Map<String, dynamic> json) {
-  return ApartmentModel(
+SellerApartmentModel _$SellerApartmentModelFromJson(Map<String, dynamic> json) {
+  return SellerApartmentModel(
     id: json['_id'] as String,
     name: json['apartmentName'] as String,
     area: json['apartmentArea'] as String,
@@ -17,7 +17,8 @@ ApartmentModel _$ApartmentModelFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$ApartmentModelToJson(ApartmentModel instance) =>
+Map<String, dynamic> _$SellerApartmentModelToJson(
+        SellerApartmentModel instance) =>
     <String, dynamic>{
       '_id': instance.id,
       'apartmentName': instance.name,

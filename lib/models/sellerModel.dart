@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'apartmentModel.dart';
+import 'sellerApartmentModel.dart';
 import 'categoryModel.dart';
 
 part 'sellerModel.g.dart';
@@ -20,7 +20,7 @@ class SellerModel {
   final String whatsapp;
   final String email;
 
-  List<ApartmentModel> apartments;
+  List<SellerApartmentModel> apartments;
 
   bool editable;
   bool verified;

@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'apartmentModel.g.dart';
+part 'sellerApartmentModel.g.dart';
 
 @JsonSerializable()
-class ApartmentModel {
+class SellerApartmentModel {
   @JsonKey(name: '_id')
   final String id;
 
@@ -18,7 +18,7 @@ class ApartmentModel {
   final String deliveryMessage;
   final String deliverySlot;
 
-  ApartmentModel({
+  SellerApartmentModel({
     @required this.id,
     @required this.name,
     @required this.area,
@@ -27,8 +27,8 @@ class ApartmentModel {
     this.deliverySlot,
   });
 
-  factory ApartmentModel.fromJson(Map<String, dynamic> json) =>
-      _$ApartmentModelFromJson(json);
+  factory SellerApartmentModel.fromJson(Map<String, dynamic> json) =>
+      _$SellerApartmentModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ApartmentModelToJson(this);
+  Map<String, dynamic> toJson() => _$SellerApartmentModelToJson(this);
 }

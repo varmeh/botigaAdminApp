@@ -32,11 +32,7 @@ SellerModel _$SellerModelFromJson(Map<String, dynamic> json) {
         ? null
         : DateTime.parse(json['fssaiValidityDate'] as String),
     fssaiCertificateUrl: json['fssaiCertificateUrl'] as String,
-    apartments: (json['apartments'] as List)
-        ?.map((e) => e == null
-            ? null
-            : ApartmentModel.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    apartments: json['apartments'] as List,
     categories: (json['categories'] as List)
         ?.map((e) => e == null
             ? null
@@ -71,5 +67,6 @@ Map<String, dynamic> _$SellerModelToJson(SellerModel instance) =>
       'fssaiNumber': instance.fssaiNumber,
       'fssaiValidityDate': instance.fssaiValidityDate?.toIso8601String(),
       'fssaiCertificateUrl': instance.fssaiCertificateUrl,
+      'address': instance.address,
       'categories': instance.categories,
     };
