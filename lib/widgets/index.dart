@@ -7,3 +7,4 @@ export 'botigaBottomModal.dart';
 export 'buttons/index.dart';
 export 'searchBar.dart';
 export 'circleNetworkAvatar.dart';
+export 'shimmerWidget.dart';
