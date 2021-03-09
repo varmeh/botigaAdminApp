@@ -31,6 +31,15 @@ class ApartmentModel {
     this.banners,
   });
 
+  ApartmentSellerModel seller(String sellerId) {
+    for (final seller in sellers) {
+      if (seller.id == sellerId) {
+        return seller;
+      }
+    }
+    return null;
+  }
+
   factory ApartmentModel.fromJson(Map<String, dynamic> json) =>
       _$ApartmentModelFromJson(json);
 

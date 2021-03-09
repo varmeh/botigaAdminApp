@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../util/index.dart' show Http;
+import '../../util/index.dart' show Http, AppTheme, TextStyleHelpers;
 import '../../widgets/index.dart' show BotigaAppBar, LoaderOverlay, Toast;
 import '../../provider/index.dart' show ApartmentProvider;
 import '../../models/index.dart' show ApartmentServicesModel, BannerModel;
@@ -39,7 +39,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
             child: ListView(
               children: [
                 ...provider.banners.map((banner) {
-                  _bannerTile(banner);
+                  return _bannerTile(banner, provider);
                 }).toList()
               ],
             ),
@@ -49,19 +49,51 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
     );
   }
 
-  Widget _bannerTile(BannerModel banner) {
+  Widget _bannerTile(BannerModel banner, ApartmentProvider provider) {
+    final seller = provider.apartment.seller(banner.sellerId);
+    final sellerTitle =
+        seller != null ? seller.brandName : 'No Seller Attached';
+
     return InkWell(
       onTap: () {},
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 20.0),
-          Image.network(
-            banner.url,
-            width: double.infinity - 40,
-            height: 160,
-          )
-        ],
+      child: Padding(
+        padding:
+            const EdgeInsets.only(top: 24, bottom: 24, left: 20, right: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(
+              banner.url,
+              fit: BoxFit.fill,
+              width: double.infinity,
+              height: 160,
+            ),
+            SizedBox(height: 24.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  sellerTitle,
+                  style:
+                      AppTheme.textStyle.w500.color100.size(20).lineHeight(1.3),
+                ),
+                SizedBox(width: 24),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {},
+                  child: Icon(
+                    Icons.delete,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16.0),
+            Divider(
+              thickness: 1,
+              color: AppTheme.dividerColor,
+            ),
+          ],
+        ),
       ),
     );
   }
