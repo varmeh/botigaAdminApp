@@ -91,6 +91,7 @@ class _SearchBarState extends State<SearchBar> {
             width: _height,
             height: _height,
             child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 _textEditingController.clear();
                 setState(() {
@@ -114,6 +115,7 @@ class _SearchBarState extends State<SearchBar> {
       width: _height,
       height: _height,
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: _onSubmit,
         child: Icon(
           Icons.search,

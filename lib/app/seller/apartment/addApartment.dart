@@ -80,7 +80,7 @@ class _AddApartmentState extends State<AddApartment> {
   Widget _apartmentTile(int index) {
     final apartment = _apartments[index];
 
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         _showConfirmationBottomSheet(context, apartment);
       },

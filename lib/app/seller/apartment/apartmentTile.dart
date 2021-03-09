@@ -105,7 +105,7 @@ class _ApartmentTileState extends State<ApartmentTile> {
                       : Container(),
                 ],
               ),
-              GestureDetector(
+              InkWell(
                 onTap: () {
                   showDialog(
                     context: context,
