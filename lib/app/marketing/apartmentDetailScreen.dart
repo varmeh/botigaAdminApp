@@ -30,7 +30,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ApartmentProvider>(context, listen: false);
+    final provider = Provider.of<ApartmentProvider>(context);
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,

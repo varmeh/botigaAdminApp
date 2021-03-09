@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class Http {
   static final _baseUrl = 'https://prod.botiga.app';
@@ -50,6 +51,24 @@ class Http {
       headers: {..._globalHeaders},
     );
     return parse(response);
+  }
+
+  static Future<dynamic> postImage(String url, File image) async {
+    var request = http.MultipartRequest('POST', Uri.parse('$_baseUrl$url'));
+
+    final fileType = image.path.split(".").last;
+    request.files.add(await http.MultipartFile.fromPath(
+      'image',
+      image.path,
+      contentType: MediaType('image', fileType),
+    ));
+
+    request.headers.addAll({'Content-type': 'multipart/form-data'});
+
+    final response = await request.send();
+    final responseStr = await response.stream.bytesToString();
+    final json = jsonDecode(responseStr);
+    return json;
   }
 
   static dynamic parse(http.Response response) {

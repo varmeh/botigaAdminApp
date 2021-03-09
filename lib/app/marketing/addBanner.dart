@@ -10,7 +10,8 @@ import '../../widgets/index.dart'
         ImageSelectionWidget,
         BotigaBottomModal,
         ActiveButton,
-        PassiveButton;
+        PassiveButton,
+        Toast;
 import '../../models/index.dart' show ApartmentSellerModel;
 import '../../provider/index.dart' show ApartmentProvider;
 
@@ -28,10 +29,12 @@ class _AddBannerScreenState extends State<AddBannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ApartmentProvider>(context);
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: BotigaAppBar('Add Banner'),
-      bottomNavigationBar: _uploadButton(),
+      bottomNavigationBar: _uploadButton(provider),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(top: 24),
@@ -66,7 +69,7 @@ class _AddBannerScreenState extends State<AddBannerScreen> {
                 child: ClipRRect(
                   child: Image.file(
                     File(_imageFile.path),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fill,
                   ),
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -194,12 +197,29 @@ class _AddBannerScreenState extends State<AddBannerScreen> {
     );
   }
 
-  Widget _uploadButton() {
+  Widget _uploadButton(ApartmentProvider provider) {
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: _imageFile != null && _seller != null
-            ? ActiveButton(title: 'Upload Banner', onPressed: () {})
+            ? ActiveButton(
+                title: 'Upload Banner',
+                onPressed: () async {
+                  setState(() => _isLoading = true);
+                  try {
+                    String bannerUrl = await provider.uploadImage(_imageFile);
+                    await provider.addBanner(
+                      bannerUrl: bannerUrl,
+                      sellerId: _seller.id,
+                      position: 1,
+                    );
+                    Navigator.pop(context);
+                  } catch (error) {
+                    Toast(message: Http.message(error)).show(context);
+                  } finally {
+                    setState(() => _isLoading = false);
+                  }
+                })
             : PassiveButton(title: 'Upload Banner', onPressed: () {}),
       ),
     );

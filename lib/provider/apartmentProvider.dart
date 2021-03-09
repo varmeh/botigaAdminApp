@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../models/index.dart' show ApartmentModel, BannerModel;
@@ -20,7 +21,7 @@ class ApartmentProvider with ChangeNotifier {
   }
 
   Future<void> addBanner(
-      {String bannerUrl, String sellerId, int position = 0}) async {
+      {String bannerUrl, String sellerId, int position = 1}) async {
     final json = await Http.post(
       '/api/admin/apartments/banners',
       body: {
@@ -45,5 +46,10 @@ class ApartmentProvider with ChangeNotifier {
         .cast<BannerModel>()
         .toList();
     notifyListeners();
+  }
+
+  Future<String> uploadImage(File imageFile) async {
+    final json = await Http.postImage('/api/admin/banners/image', imageFile);
+    return json['imageUrl'];
   }
 }
