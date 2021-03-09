@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import './provider/index.dart' show SellerProvider;
+import './provider/index.dart' show SellerProvider, ApartmentProvider;
 import './app/tabbar.dart';
 
 Future<void> main() async {
@@ -19,7 +19,8 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => SellerProvider())
+        ChangeNotifierProvider(create: (context) => SellerProvider()),
+        ChangeNotifierProvider(create: (context) => ApartmentProvider())
       ],
       child: BotigaAdminApp(),
     ),

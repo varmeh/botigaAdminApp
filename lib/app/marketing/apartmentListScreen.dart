@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../util/index.dart';
+import '../../util/index.dart' show Http, AppTheme, TextStyleHelpers;
 import '../../models/index.dart' show ApartmentServicesModel;
 import '../../widgets/index.dart'
     show BotigaAppBar, SearchBar, LoaderOverlay, Toast;
+
+import 'apartmentDetailScreen.dart';
 
 class ApartmentListScreen extends StatefulWidget {
   @override
@@ -69,8 +71,15 @@ class _ApartmentListScreenState extends State<ApartmentListScreen> {
   Widget _apartmentTile(int index) {
     final apartment = _apartments[index];
 
-    return GestureDetector(
-      onTap: () {},
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ApartmentDetailScreen(apartment),
+          ),
+        );
+      },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
