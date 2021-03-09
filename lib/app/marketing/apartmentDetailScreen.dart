@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:animations/animations.dart';
 import 'package:provider/provider.dart';
 
 import '../../util/index.dart' show Http, AppTheme, TextStyleHelpers;
 import '../../widgets/index.dart' show BotigaAppBar, LoaderOverlay, Toast;
 import '../../provider/index.dart' show ApartmentProvider;
 import '../../models/index.dart' show ApartmentServicesModel, BannerModel;
+
+import 'addBanner.dart';
 
 class ApartmentDetailScreen extends StatefulWidget {
   final ApartmentServicesModel apartment;
@@ -30,7 +33,10 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
     final provider = Provider.of<ApartmentProvider>(context, listen: false);
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       appBar: BotigaAppBar(widget.apartment.name),
+      floatingActionButton: _addBannerButton(provider),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(top: 24),
@@ -38,9 +44,19 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
             isLoading: _isLoading,
             child: ListView(
               children: [
-                ...provider.banners.map((banner) {
-                  return _bannerTile(banner, provider);
-                }).toList()
+                ...provider.hasBanners
+                    ? provider.banners
+                        .map((banner) => _bannerTile(banner, provider))
+                    : [
+                        Center(
+                          child: Text(
+                            'No Banners here'.toUpperCase(),
+                            style: AppTheme.textStyle.w500.color100
+                                .size(22)
+                                .lineHeight(1.4),
+                          ),
+                        )
+                      ]
               ],
             ),
           ),
@@ -96,6 +112,39 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
         ),
       ),
     );
+  }
+
+  Widget _addBannerButton(ApartmentProvider provider) {
+    return provider.banners.length < 5
+        ? Padding(
+            padding: EdgeInsets.only(bottom: 28.0),
+            child: OpenContainer(
+              closedColor: AppTheme.backgroundColor,
+              closedShape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(50.0)),
+              ),
+              closedElevation: 4.0,
+              transitionDuration: Duration(milliseconds: 300),
+              closedBuilder: (context, openContainer) {
+                return FloatingActionButton.extended(
+                  backgroundColor: AppTheme.backgroundColor,
+                  elevation: 4.0,
+                  icon: const Icon(Icons.add, color: Color(0xff179F57)),
+                  label: Text(
+                    'Add Banner',
+                    style: AppTheme.textStyle
+                        .size(15)
+                        .w700
+                        .letterSpace(1)
+                        .colored(AppTheme.primaryColor),
+                  ),
+                  onPressed: () => openContainer(),
+                );
+              },
+              openBuilder: (_, __) => AddBannerScreen(),
+            ),
+          )
+        : Container();
   }
 
   Future<void> _getApartmentDetails() async {

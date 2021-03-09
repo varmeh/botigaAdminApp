@@ -50,5 +50,7 @@
     	<string>phonepe</string>
     	<string>paytmmp</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Your photos library is used to upload your brand logo and product photos on Botiga Store</string>
 </dict>
 </plist>

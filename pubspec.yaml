@@ -36,6 +36,8 @@ dependencies:
   cached_network_image: ^2.3.2+1
   carousel_slider: ^3.0.0
   shimmer: ^1.1.2
+  image_picker: ^0.6.7+14
+  app_settings: ^4.0.4
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

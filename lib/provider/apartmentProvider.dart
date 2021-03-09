@@ -7,6 +7,7 @@ class ApartmentProvider with ChangeNotifier {
   ApartmentModel apartment;
 
   List<BannerModel> get banners => apartment != null ? apartment.banners : [];
+  bool get hasBanners => banners.length > 0;
 
   Future<void> getApartment(String apartmentId) async {
     final json = await Http.get('/api/admin/apartments/$apartmentId');
