@@ -34,9 +34,10 @@ class ApartmentProvider with ChangeNotifier {
     _updateBanners(json);
   }
 
-  Future<void> removeBanner(String bannerId) async {
+  Future<void> removeBanner(BannerModel banner) async {
     final json = await Http.delete(
-        '/api/admin/apartments/${apartment.id}/banners/$bannerId');
+        '/api/admin/apartments/${apartment.id}/banners/${banner.id}');
+    await Http.post('/api/admin/image/delete', body: {'imageUrl': banner.url});
     _updateBanners(json);
   }
 

@@ -96,7 +96,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
                 SizedBox(width: 24),
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () {},
+                  onTap: () => _removeBanner(provider, banner),
                   child: Icon(
                     Icons.delete,
                   ),
@@ -145,6 +145,41 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
             ),
           )
         : Container();
+  }
+
+  void _removeBanner(ApartmentProvider provider, BannerModel banner) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Delete Banner',
+          style: AppTheme.textStyle.w500.color100,
+        ),
+        content: Text(
+          'Are you sure you want to delete this banner?',
+          style: AppTheme.textStyle.w400.color100,
+        ),
+        actions: [
+          FlatButton(
+            child: Text(
+              'Confirm',
+              style: AppTheme.textStyle.w600.colored(AppTheme.errorColor),
+            ),
+            onPressed: () async {
+              Navigator.of(context).pop();
+              setState(() => _isLoading = true);
+              try {
+                await provider.removeBanner(banner);
+              } catch (error) {
+                Toast(message: Http.message(error)).show(context);
+              } finally {
+                setState(() => _isLoading = false);
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _getApartmentDetails() async {
