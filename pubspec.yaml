@@ -38,6 +38,7 @@ dependencies:
   shimmer: ^1.1.2
   image_picker: ^0.6.7+14
   app_settings: ^4.0.4
+  flutter_tags: ^0.4.9+1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

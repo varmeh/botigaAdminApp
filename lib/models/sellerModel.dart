@@ -36,6 +36,7 @@ class SellerModel {
   final String fssaiCertificateUrl;
   final String address;
 
+  List<String> filters;
   List<CategoryModel> categories;
 
   SellerModel({
@@ -65,6 +66,8 @@ class SellerModel {
     this.categories,
     this.address,
   });
+
+  bool get hasFilters => filters != null && filters.length > 0;
 
   factory SellerModel.fromJson(Map<String, dynamic> json) =>
       _$SellerModelFromJson(json);

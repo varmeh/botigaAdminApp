@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
 
-import '../models/index.dart' show SellerModel;
+import '../models/index.dart' show SellerModel, SellerFilterModel;
 import '../util/index.dart' show Http;
 
 class SellerProvider with ChangeNotifier {
   SellerModel seller;
+  List<SellerFilterModel> filters;
 
   bool get hasSeller => seller != null;
+  // List<String> get sellerFilters => seller.hasFilters ? sellerFilters : [];
 
   Future<void> getSeller(String phone) async {
+    final filterJson = await Http.get('/api/services/sellerFilters');
+
+    filters = filterJson
+        .map(
+          (item) => SellerFilterModel.fromJson(item),
+        )
+        .cast<SellerFilterModel>()
+        .toList();
+
     final json = await Http.get('/api/admin/seller/$phone');
     seller = SellerModel.fromJson(json);
     notifyListeners();
@@ -96,5 +107,17 @@ class SellerProvider with ChangeNotifier {
         'live': live,
       },
     );
+  }
+
+  Future<void> updateSellerFilters(List<String> filters) async {
+    final json = await Http.patch(
+      '/api/admin/seller/filters',
+      body: {
+        'phone': seller.phone,
+        'filters': filters,
+      },
+    );
+    seller = SellerModel.fromJson(json);
+    notifyListeners();
   }
 }

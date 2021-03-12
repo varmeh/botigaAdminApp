@@ -146,7 +146,7 @@ class _ProductTileState extends State<ProductTile> {
                 _hasImage
                     ? SizedBox(
                         width: 120,
-                        height: 110,
+                        height: 120,
                         child: Container(
                           decoration: BoxDecoration(
                             image: DecorationImage(

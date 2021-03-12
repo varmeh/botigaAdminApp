@@ -43,7 +43,7 @@ SellerModel _$SellerModelFromJson(Map<String, dynamic> json) {
             : CategoryModel.fromJson(e as Map<String, dynamic>))
         ?.toList(),
     address: json['address'] as String,
-  );
+  )..filters = (json['filters'] as List)?.map((e) => e as String)?.toList();
 }
 
 Map<String, dynamic> _$SellerModelToJson(SellerModel instance) =>
@@ -72,5 +72,6 @@ Map<String, dynamic> _$SellerModelToJson(SellerModel instance) =>
       'fssaiValidityDate': instance.fssaiValidityDate?.toIso8601String(),
       'fssaiCertificateUrl': instance.fssaiCertificateUrl,
       'address': instance.address,
+      'filters': instance.filters,
       'categories': instance.categories,
     };

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_tags/flutter_tags.dart';
 
 import '../../util/index.dart' show AppTheme, Http, TextStyleHelpers;
 import '../../widgets/index.dart'
@@ -103,7 +104,7 @@ class _SellerScreenState extends State<SellerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<SellerProvider>(context, listen: false);
+    final provider = Provider.of<SellerProvider>(context);
 
     return LoaderOverlay(
       isLoading: _isLoading,
@@ -119,6 +120,8 @@ class _SellerScreenState extends State<SellerScreen> {
                 _sellerDetails(provider.seller),
                 provider.hasSeller ? _divider : Container(),
                 _fssaiDetails(provider.seller),
+                provider.hasSeller ? _divider : Container(),
+                _filters(provider),
                 provider.hasSeller ? _divider : Container(),
                 _bankDetails(provider.seller),
                 SizedBox(height: 152),
@@ -293,6 +296,87 @@ class _SellerScreenState extends State<SellerScreen> {
               ],
             ),
           );
+  }
+
+  Widget _filters(SellerProvider provider) {
+    const sizedBox = SizedBox(height: 24);
+    Set<String> _tags =
+        provider.hasSeller ? Set.from(provider.seller.filters) : Set();
+
+    return provider.hasSeller
+        ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Seller Filters',
+                  textAlign: TextAlign.start,
+                  style: AppTheme.textStyle.color100.w500.size(18.0),
+                ),
+                sizedBox,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: Column(
+                    children: [
+                      Tags(
+                        spacing: 16,
+                        runSpacing: 16,
+                        alignment: WrapAlignment.spaceAround,
+                        itemCount: provider.filters.length,
+                        itemBuilder: (int index) {
+                          final _filter = provider.filters[index];
+                          final isSelected = _tags.contains(_filter.value);
+
+                          return ItemTags(
+                            index: index,
+                            title: _filter.displayName,
+                            textStyle: AppTheme.textStyle.w400
+                                .size(16)
+                                .lineHeight(1.3),
+                            key: Key(_filter.value),
+                            customData: _filter.value,
+                            active: isSelected,
+                            color: AppTheme.backgroundColor,
+                            activeColor: AppTheme.primaryColor,
+                            textColor: AppTheme.color100,
+                            textActiveColor: AppTheme.backgroundColor,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            border: Border.all(color: Colors.transparent),
+                            onPressed: (tag) {
+                              if (tag.active) {
+                                _tags.add(tag.customData);
+                              } else {
+                                _tags.remove(tag.customData);
+                              }
+                            },
+                          );
+                        },
+                      ),
+                      sizedBox,
+                      ActiveButton(
+                        title: 'Update Filters',
+                        onPressed: () async {
+                          setState(() => _isLoading = true);
+                          try {
+                            await provider.updateSellerFilters(_tags.toList());
+                          } catch (error) {
+                            Toast(message: Http.message(error)).show(context);
+                          } finally {
+                            setState(() => _isLoading = false);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+        : Container();
   }
 
   Widget _bankDetails(SellerModel seller) {

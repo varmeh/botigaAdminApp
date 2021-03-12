@@ -5,3 +5,4 @@ export 'categoryModel.dart';
 export 'productModel.dart';
 export 'apartmentModel.dart';
 export 'bannerModel.dart';
+export 'sellerFilterModel.dart';
