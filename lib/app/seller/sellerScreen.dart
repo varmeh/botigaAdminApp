@@ -670,7 +670,7 @@ class _SellerScreenState extends State<SellerScreen> {
                     'order_id': orderId,
                     'timeout': 60 * 3, // In secs,
                     'prefill': {
-                      'contact': provider.seller.phone,
+                      'contact': '919910057232',
                       'email': provider.seller.email,
                       'method': 'upi',
                     },
