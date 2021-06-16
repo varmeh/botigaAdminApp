@@ -4,18 +4,42 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
+import 'index.dart' show Token;
+
 class Http {
-  static final _baseUrl = 'https://prod.botiga.app';
+  static final _baseUrl = 'https://dev.botiga.app';
+  static String _token;
 
   static Map<String, String> _globalHeaders = {
     'Content-type': 'application/json',
     'Accept': 'application/json',
   };
 
+  static Future<void> fetchToken() async {
+    _token = await Token.read();
+  }
+
+  static Future<dynamic> postAuth(
+    String url, {
+    Map<String, String> body,
+  }) async {
+    final response = await http.post(
+      '$_baseUrl$url',
+      headers: {..._globalHeaders},
+      body: body != null ? json.encode(body) : null,
+    );
+
+    if (response.headers['authorization'] != null) {
+      _token = response.headers['authorization'];
+      await Token.write(_token); // save token to persistence storage
+    }
+    return parse(response);
+  }
+
   static Future<dynamic> get(String url) async {
     final response = await http.get(
       '$_baseUrl$url',
-      headers: {..._globalHeaders},
+      headers: {..._globalHeaders, 'Authorization': _token},
     );
     return parse(response);
   }
@@ -25,7 +49,7 @@ class Http {
     final _headers = headers == null ? {} : headers;
     final response = await http.post(
       '$_baseUrl$url',
-      headers: {..._globalHeaders, ..._headers},
+      headers: {'Authorization': _token, ..._globalHeaders, ..._headers},
       body: body != null ? json.encode(body) : null,
     );
     return parse(response);
@@ -48,7 +72,7 @@ class Http {
   static Future<dynamic> delete(String url) async {
     final response = await http.delete(
       '$_baseUrl$url',
-      headers: {..._globalHeaders},
+      headers: {'Authorization': _token, ..._globalHeaders},
     );
     return parse(response);
   }
@@ -63,7 +87,10 @@ class Http {
       contentType: MediaType('image', fileType),
     ));
 
-    request.headers.addAll({'Content-type': 'multipart/form-data'});
+    request.headers.addAll({
+      'Content-type': 'multipart/form-data',
+      'Authorization': _token,
+    });
 
     final response = await request.send();
     final responseStr = await response.stream.bytesToString();
