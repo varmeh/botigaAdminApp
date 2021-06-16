@@ -7,7 +7,7 @@ import 'package:http_parser/http_parser.dart';
 import 'index.dart' show Token;
 
 class Http {
-  static final _baseUrl = 'https://dev.botiga.app';
+  static final _baseUrl = 'https://prod.botiga.app';
   static String _token;
 
   static Map<String, String> _globalHeaders = {
