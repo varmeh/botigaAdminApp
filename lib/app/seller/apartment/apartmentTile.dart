@@ -81,29 +81,31 @@ class _ApartmentTileState extends State<ApartmentTile> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.apartment.deliveryMessage,
-                    style: AppTheme.textStyle
-                        .size(15)
-                        .w500
-                        .color50
-                        .lineHeight(1.33),
-                  ),
-                  SizedBox(height: 4.0),
-                  _hasSlot
-                      ? Text(
-                          widget.apartment.deliverySlot,
-                          style: AppTheme.textStyle
-                              .size(15)
-                              .w500
-                              .color50
-                              .lineHeight(1.33),
-                        )
-                      : Container(),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.apartment.deliveryMessage,
+                      style: AppTheme.textStyle
+                          .size(15)
+                          .w500
+                          .color50
+                          .lineHeight(1.33),
+                    ),
+                    SizedBox(height: 4.0),
+                    _hasSlot
+                        ? Text(
+                            widget.apartment.deliverySlot,
+                            style: AppTheme.textStyle
+                                .size(15)
+                                .w500
+                                .color50
+                                .lineHeight(1.33),
+                          )
+                        : Container(),
+                  ],
+                ),
               ),
               InkWell(
                 onTap: () {
