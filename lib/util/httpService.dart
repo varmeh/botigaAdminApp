@@ -39,7 +39,7 @@ class Http {
   static Future<dynamic> get(String url) async {
     final response = await http.get(
       '$_baseUrl$url',
-      headers: {..._globalHeaders, 'Authorization': _token},
+      headers: {'Authorization': _token, ..._globalHeaders},
     );
     return parse(response);
   }
@@ -63,7 +63,7 @@ class Http {
     final _headers = headers == null ? {} : headers;
     final response = await http.patch(
       '$_baseUrl$url',
-      headers: {..._globalHeaders, ..._headers},
+      headers: {'Authorization': _token, ..._globalHeaders, ..._headers},
       body: body != null ? json.encode(body) : null,
     );
     return parse(response);
